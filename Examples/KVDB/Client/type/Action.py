@@ -1,0 +1,12 @@
+class Action:
+    SET = "s"
+    GET = "g"
+    INCREMENT = "i"
+    DECREMENT = "d"
+    REMOVE = "rm"
+    ADD = "a"
+    REVERSE = "r"
+    ADDVERTEX = "av"
+    REMOVEVERTEX = "rv"
+    ADDEDGE = "ae"
+    REMOVEEDGE = "re"
