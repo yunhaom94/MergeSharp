@@ -4,7 +4,7 @@ import socket
 import random
 import time
 import sys
-from type.GCounter import PNCounter
+from type.PNCounter import PNCounter
 from type.RCounter import RCounter
 from type.ORSet import ORSet
 from type.Graph import Graph

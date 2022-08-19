@@ -4,8 +4,12 @@ using ProtoBuf;
 
 namespace MergeSharp
 {   
+    /// <summary>
+    /// A message protocol used to propagate updates to other nodes/replicas.
+    /// This class uses protobuf to serialize and deserialize messages.
+    /// </summary>
     [ProtoContract]
-    public class SyncProtocol
+    public class NetworkProtocol
     {
 
         public enum SyncMsgType
@@ -24,7 +28,7 @@ namespace MergeSharp
         [ProtoMember(4)]
         public byte[] message;
 
-        public SyncProtocol()
+        public NetworkProtocol()
         {
         }
 
@@ -36,7 +40,7 @@ namespace MergeSharp
         {
             using(var memoryStream = new MemoryStream())
             {
-                Serializer.Serialize<SyncProtocol>(memoryStream, this);
+                Serializer.Serialize<NetworkProtocol>(memoryStream, this);
                 return memoryStream.ToArray();
             }
 
@@ -46,11 +50,11 @@ namespace MergeSharp
         /// Decode a json serialzation of a replication message
         /// </summary>
         /// <param name="msg"></param>
-        public static SyncProtocol Decode(byte[] msg)
+        public static NetworkProtocol Decode(byte[] msg)
         {
             using(var memoryStream = new MemoryStream(msg))
             {
-                return Serializer.Deserialize<SyncProtocol>(memoryStream);
+                return Serializer.Deserialize<NetworkProtocol>(memoryStream);
             }
         }
 

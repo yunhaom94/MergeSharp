@@ -1,9 +1,8 @@
 using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using NetCoreServer;
 
 namespace KVDB;
@@ -23,7 +22,7 @@ public class ConnectionSession : TcpSession
     protected override void OnConnecting()
     {
         var client = IPAddress.Parse(((IPEndPoint)this.Socket.RemoteEndPoint).Address.ToString()) + ":" + ((IPEndPoint)this.Socket.RemoteEndPoint).Port.ToString();
-        Console.WriteLine("New client from " + client + " connected");
+        Global.logger.LogInformation("New client from " + client + " connected");
     }
 
     protected override void OnReceived(byte[] buffer, long offset, long size)
@@ -87,7 +86,7 @@ public class ConnectionSession : TcpSession
                     contentReadCount += leftToRead;
 
                     MessagePacket msg = new MessagePacket(src, contentlen, Encoding.UTF8.GetString(contentRead), this);
-                    Console.WriteLine("Recieveing msg:\n " + msg);
+                    Global.logger.LogDebug("Recieveing msg:\n " + msg);
                     //this.reqQueue.Writer.WriteAsync(msg);
 
 
@@ -104,12 +103,13 @@ public class ConnectionSession : TcpSession
 
     private void HandleRequest(MessagePacket msg)
     {
-        Console.WriteLine("Handling msg:\n " + msg);
-
-        var cmd = Command.ParseCommand(msg);
-
-
+        Global.logger.LogDebug("Handling msg:\n{0}", msg);
+        var response =  Command.ParseCommand(msg).Execute(Global.ksm);
+        
+        Global.logger.LogDebug("Sending response:\n{0}", response);
+        this.Send(response.Serialize());
     }
+
 }
 
 public class Server : TcpServer

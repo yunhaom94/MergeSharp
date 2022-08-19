@@ -22,10 +22,9 @@ public class MessagePacket
     public static int HEADER_SIZE = 1 + NUM_FIELDS * 4;
 
     public MsgSrc msgSrc { set; get; }
-    public int length { get; }
-    public string content { get; }
-    // server id of reciving node, if not broadcast
-    public int to { get; }
+    public int length { get; protected set; }
+    public string content { get; protected set; }
+
 
     // --meta data--
     public ConnectionSession connection { get; set; }
@@ -42,6 +41,18 @@ public class MessagePacket
     }
 
     // create a msg to send
+    public MessagePacket(MsgSrc src, int length, string content)
+    {
+        this.msgSrc = src;
+        this.length = length;
+        this.content = content;
+    }
+
+    // can only used by subclasses
+    protected MessagePacket()
+    {
+
+    }
 
 
     public byte[] Serialize()
@@ -83,6 +94,42 @@ public class MessagePacket
         "Sender Class: " + msgSrcstr + "\n" +
         "Length: " + this.length + "\n" +
         "Content:\n" + this.content;
+
+    }
+}
+
+public class ClientResponse : MessagePacket
+{
+
+    public ClientResponse(bool status, string[] content) 
+    {
+        this.CreateResponse(status, content);
+    }
+
+    public ClientResponse(bool status, string content = "")
+    {
+        this.CreateResponse(status, new string[] { content });
+    }
+
+    private void CreateResponse(bool status, string[] content) 
+    {
+        StringBuilder str = new StringBuilder();
+        if (status)
+            str.AppendLine("Succeed");
+        else
+            str.AppendLine("Failed");
+
+        foreach (var l in content)
+        {
+            str.AppendLine(l);
+        }
+
+
+        this.content = str.ToString();
+        this.length = this.content.Length;
+        this.msgSrc = MsgSrc.server;
+
+
 
     }
 

@@ -1,11 +1,10 @@
 using Xunit;
 using System;
 
-using MergeSharp;
+
 using MergeSharp.TCPConnectionManager;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace MergeSharp.Tests;
 
@@ -29,6 +28,9 @@ public class TCPConnectionManagerTwoNodesTests : IDisposable
         // register types
         this.rm0.RegisterType<PNCounter>();
         this.rm1.RegisterType<PNCounter>();
+
+        this.rm0.RegisterType<TPSet<string>>();
+        this.rm1.RegisterType<TPSet<string>>();
 
     }
 
@@ -55,7 +57,7 @@ public class TCPConnectionManagerTwoNodesTests : IDisposable
         // sleep
         Thread.Sleep(1000);
 
-        var pnc1r = rm1.GetCRDT<PNCounter>(uid);   
+        var pnc1r = this.rm1.GetCRDT<PNCounter>(uid);
 
         Assert.Equal(pnc1.Get(), pnc1r.Get());
 
@@ -75,7 +77,7 @@ public class TCPConnectionManagerTwoNodesTests : IDisposable
 
         Thread.Sleep(1000);
 
-        var pnc1r = rm1.GetCRDT<PNCounter>(uid);
+        var pnc1r = this.rm1.GetCRDT<PNCounter>(uid);
         Assert.Equal(pnc1.Get(), pnc1r.Get());
 
         pnc1r.Increment(10);
@@ -85,6 +87,31 @@ public class TCPConnectionManagerTwoNodesTests : IDisposable
 
 
         Assert.Equal(pnc1.Get(), pnc1r.Get());
+    }
+
+    [Fact]
+    public void TCPClusterTPSetTest1()
+    {
+        Guid uid = this.rm0.CreateCRDTInstance<TPSet<string>>(out TPSet<string> tpset1);
+
+        tpset1.Add("a");
+        tpset1.Add("b");
+
+        Thread.Sleep(1000);
+
+        var tpset1r = this.rm1.GetCRDT<TPSet<string>>(uid);
+
+        Thread.Sleep(1000);
+
+        tpset1r.Add("c");
+        tpset1r.Add("d");
+        tpset1r.Remove("a");
+
+        Thread.Sleep(1000);
+
+
+        Assert.Equal(new List<string> {"b", "c", "d"}, tpset1.LookupAll());
+        Assert.Equal(tpset1.LookupAll(), tpset1r.LookupAll());
     }
 
 
@@ -139,10 +166,10 @@ public class TCPConnectionManagerMultiNodesTests : IDisposable
         Thread.Sleep(1000);
 
         // get the PNCounter from the other nodes
-        var pnc1 = rm1.GetCRDT<PNCounter>(uid);
-        var pnc2 = rm2.GetCRDT<PNCounter>(uid);
-        var pnc3 = rm3.GetCRDT<PNCounter>(uid);
-        var pnc4 = rm4.GetCRDT<PNCounter>(uid);
+        var pnc1 = this.rm1.GetCRDT<PNCounter>(uid);
+        var pnc2 = this.rm2.GetCRDT<PNCounter>(uid);
+        var pnc3 = this.rm3.GetCRDT<PNCounter>(uid);
+        var pnc4 = this.rm4.GetCRDT<PNCounter>(uid);
 
         // list of pncs
         List<PNCounter> pncs = new List<PNCounter>() { pnc, pnc1, pnc2, pnc3, pnc4 };
@@ -153,11 +180,11 @@ public class TCPConnectionManagerMultiNodesTests : IDisposable
         foreach (var p in pncs)
         {
             int amount = rnd.Next(1, 10);
-            p.Increment(amount);            
+            p.Increment(amount);
         }
 
         // check if the same pncounters are replicated on all nodes
-    
+
 
         // sleep for 1 second
         Thread.Sleep(5000);
@@ -168,6 +195,7 @@ public class TCPConnectionManagerMultiNodesTests : IDisposable
         Assert.Equal(pncs[0].Get(), pncs[4].Get());
 
     }
+
 
 
     public void Dispose()

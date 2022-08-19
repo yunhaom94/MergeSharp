@@ -29,7 +29,7 @@ public class PNCounterTests
         pnc1.Increment(10);
         pnc1.Decrement(3);
 
-        PNCounterMsg update = (PNCounterMsg) pnc1.GetLastSynchroizeUpdate();
+        PNCounterMsg update = (PNCounterMsg) pnc1.GetLastSynchronizedUpdate();
         pnc2.Merge(update);
         
         Assert.Equal(pnc1.Get(), pnc2.Get());

@@ -49,13 +49,13 @@ class ManagerServer
             try
             {
                 // read the random number from the client in a loop
-                SyncProtocol syncMsg = null;
+                NetworkProtocol syncMsg = null;
                 do
                 {
 
                     try
                     {
-                        syncMsg = Serializer.DeserializeWithLengthPrefix<SyncProtocol>(ns, PrefixStyle.Base128);
+                        syncMsg = Serializer.DeserializeWithLengthPrefix<NetworkProtocol>(ns, PrefixStyle.Base128);
                     }
                     catch (IOException)
                     {

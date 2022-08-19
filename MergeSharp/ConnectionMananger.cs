@@ -2,7 +2,11 @@ using System;
 
 
 namespace MergeSharp
-{
+{   
+    /// <summary>
+    /// Any data structure that a ConnectionsManager uses to manage connections to
+    /// other nodes/replicas in the system need to inherit from this class.
+    /// </summary>
     public abstract class ConnectionEndpoint
     {
 
@@ -10,9 +14,9 @@ namespace MergeSharp
 
     public class SyncMsgEventArgs : EventArgs
     {
-        public SyncProtocol msg { private set; get; } 
+        public NetworkProtocol msg { private set; get; } 
         public ReplicatedDataTypes type { private set; get; } 
-        public SyncMsgEventArgs(SyncProtocol msg) 
+        public SyncMsgEventArgs(NetworkProtocol msg) 
         {
             this.msg = msg;
         }
@@ -20,30 +24,36 @@ namespace MergeSharp
     }
 
 
+    ///
+    public delegate void ReceivedSyncEventHandler(object sender, SyncMsgEventArgs e);
 
-    public delegate void RecivedSyncEventHandler(object sender, SyncMsgEventArgs e);
-    
-    // This needs to be implemented for users wish to use CRDT
-    // or user the default one
+    /// <summary>
+    /// A concrete ConnectionManager class needs to implement this interface
+    /// that handles the communication among nodes/replicas.
+    /// </summary>
     public interface IConnectionManager : IDisposable
     {
+        /// <summary>
+        /// Call this delegate when a new synchronization message is received 
+        /// so the ReplicationManager can perform the necessary synchronization on stored objects.
+        /// </summary>
+        public event EventHandler<SyncMsgEventArgs> ReplicationManagerSyncMsgHandlerEvent;
 
-        public event EventHandler<SyncMsgEventArgs> UpdateSyncRecievedHandleEvent;
+        /// <summary>
+        /// Broadcasts a synchronization message to all replicas.
+        /// </summary>
+        /// <param name="msg">Sync message to be broadcasted</param>
+        public void PropagateSyncMsg(NetworkProtocol msg);
 
-        public void PropagateSyncMsg(SyncProtocol msg);
-
+        /// <summary>
+        /// Starts ConnectionManager server.
+        /// </summary>
         public void Start();
 
+        /// <summary>
+        /// Ends ConnectionManager server.
+        /// </summary>
         public void Stop();
-
-        public int NumMembers();
-
-        public int[] AllMemberIds();
-
-
-        public int CurMemberPosition();
-
-
 
 
     }

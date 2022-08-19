@@ -61,7 +61,6 @@ public class PNCounter : CRDT
     }
 
 
-    [OperationType(OpType.Query)]
     public int Get()
     {
         return this._pVector.Sum(x => x.Value) - this._nVector.Sum(x => x.Value);
@@ -83,27 +82,27 @@ public class PNCounter : CRDT
     
 
 
-    public override PropagationMessage GetLastSynchroizeUpdate()
+    public override PropagationMessage GetLastSynchronizedUpdate()
     {
         return new PNCounterMsg(this._pVector, this._nVector);
     }
 
-    public override void ApplySynchronizedUpdate(PropagationMessage RecievedUpdate)
+    public override void ApplySynchronizedUpdate(PropagationMessage ReceivedUpdate)
     {
-        PNCounterMsg recieved = (PNCounterMsg)RecievedUpdate;
-        this.Merge(recieved);
+        PNCounterMsg received = (PNCounterMsg)ReceivedUpdate;
+        this.Merge(received);
 
     }
 
-    public void Merge(PNCounterMsg recieved)
+    public void Merge(PNCounterMsg received)
     {
-        foreach (var kv in recieved.pVector)
+        foreach (var kv in received.pVector)
         {
             this._pVector.TryGetValue(kv.Key, out int value);
             this._pVector[kv.Key] = Math.Max(value, kv.Value);
         }
 
-        foreach (var kv in recieved.nVector)
+        foreach (var kv in received.nVector)
         {
             this._nVector.TryGetValue(kv.Key, out int value);
             this._nVector[kv.Key] = Math.Max(value, kv.Value);

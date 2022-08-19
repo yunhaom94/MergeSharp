@@ -16,14 +16,14 @@ public class SyncProtocolTests : IDisposable
     [Fact]
     public void SyncProtocolEncodeTest()
     {
-        SyncProtocol sp = new SyncProtocol();
+        NetworkProtocol sp = new NetworkProtocol();
         sp.uid = Guid.NewGuid();
-        sp.syncMsgType = SyncProtocol.SyncMsgType.ManagerMsg_Create;
+        sp.syncMsgType = NetworkProtocol.SyncMsgType.ManagerMsg_Create;
         sp.type = "PNCounter";
         sp.message = new byte[10];
         byte[] msg = sp.Encode();
         
-        SyncProtocol sp2 = SyncProtocol.Decode(msg);
+        NetworkProtocol sp2 = NetworkProtocol.Decode(msg);
 
         Assert.Equal(sp.uid, sp2.uid);
         Assert.Equal(sp.syncMsgType, sp2.syncMsgType);

@@ -36,7 +36,7 @@ public class TPSetTests
         set2.Add("d");
         set2.Remove("c");
 
-        set.Merge((TPSetMsg<string>)set2.GetLastSynchroizeUpdate());
+        set.Merge((TPSetMsg<string>)set2.GetLastSynchronizedUpdate());
 
         Assert.Equal(set.LookupAll(), new List<string> { "a", "b", "d" });
 

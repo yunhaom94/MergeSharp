@@ -14,8 +14,8 @@ class PNCounter:
         res = self.server.send(req)
         return res
 
-    def set(self, id, value):
-        req = req_construct("pnc", id, "s", [str(value)])
+    def set(self, id):
+        req = req_construct("pnc", id, "s", [])
         req = msg_construct(self.server, req)
         
         res = self.server.send(req)
@@ -43,8 +43,7 @@ class PNCounter:
         if (opcode == Action.GET):
             print(self.get(uid))
         elif (opcode == Action.SET):
-            value = text[3]
-            print(self.set(uid, value))
+            print(self.set(uid))
         elif (opcode == Action.INCREMENT):
             value = text[3]
             print(self.inc(uid, value))

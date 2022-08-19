@@ -1,4 +1,6 @@
 using System.Net.Sockets;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MergeSharp.TCPConnectionManager;
 
@@ -10,11 +12,14 @@ public class ConnectionManager : IConnectionManager
     
     public Node selfNode { get; private set; }
 
-    public ConnectionManager(List<Node> nodes, Node self)
+    private readonly ILogger logger;
+
+    public ConnectionManager(List<Node> nodes, Node self, ILogger logger = null)
     {
         this.nodes = nodes;
         this.selfNode = self;
         this.managerServer = new ManagerServer(this.selfNode, this);
+        this.logger = logger ?? NullLogger.Instance;
     }
 
     // this constructor takes the ip and port for self node, and a list of strings nodes' ip and port as input
@@ -46,12 +51,12 @@ public class ConnectionManager : IConnectionManager
         this.Dispose();
     }
 
-    public event EventHandler<SyncMsgEventArgs> UpdateSyncRecievedHandleEvent;
+    public event EventHandler<SyncMsgEventArgs> ReplicationManagerSyncMsgHandlerEvent;
 
 
-    public void ExecuteSyncMessage(SyncProtocol msg)
+    public void ExecuteSyncMessage(NetworkProtocol msg)
     {
-        UpdateSyncRecievedHandleEvent(this, new SyncMsgEventArgs(msg));
+        ReplicationManagerSyncMsgHandlerEvent(this, new SyncMsgEventArgs(msg));
     }
 
 
@@ -76,7 +81,7 @@ public class ConnectionManager : IConnectionManager
         throw new NotImplementedException();
     }
 
-    public void PropagateSyncMsg(SyncProtocol msg)
+    public void PropagateSyncMsg(NetworkProtocol msg)
     {
         foreach (Node node in nodes)
         {

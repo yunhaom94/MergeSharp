@@ -70,12 +70,14 @@ public class TPSet<T> : CRDT, ICollection<T>
         this.removeSet = new HashSet<T>();
     }
 
-    public void Add(T item)
+    [OperationType(OpType.Update)]
+    public virtual void Add(T item)
     {
         this.addSet.Add(item);
     }
 
-    public bool Remove(T item)
+    [OperationType(OpType.Update)]
+    public virtual bool Remove(T item)
     {
         if (this.Contains(item))
         {
@@ -85,6 +87,8 @@ public class TPSet<T> : CRDT, ICollection<T>
         return false;
 
     }
+
+
 
     public List<T> LookupAll()
     {
@@ -127,15 +131,15 @@ public class TPSet<T> : CRDT, ICollection<T>
 
 
 
-    public void Merge(TPSetMsg<T> recieved)
+    public void Merge(TPSetMsg<T> received)
     {
-        this.addSet.UnionWith(recieved.addSet);
-        this.removeSet.UnionWith(recieved.removeSet);
+        this.addSet.UnionWith(received.addSet);
+        this.removeSet.UnionWith(received.removeSet);
     }
 
-    public override void ApplySynchronizedUpdate(PropagationMessage RecievedUpdate)
+    public override void ApplySynchronizedUpdate(PropagationMessage ReceivedUpdate)
     {
-        TPSetMsg<T> recieved = (TPSetMsg<T>)RecievedUpdate;
+        TPSetMsg<T> recieved = (TPSetMsg<T>)ReceivedUpdate;
         this.Merge(recieved);
     }
 
@@ -146,7 +150,7 @@ public class TPSet<T> : CRDT, ICollection<T>
         return msg;
     }
 
-    public override PropagationMessage GetLastSynchroizeUpdate()
+    public override PropagationMessage GetLastSynchronizedUpdate()
     {
         return new TPSetMsg<T>(this.addSet, this.removeSet);
     }

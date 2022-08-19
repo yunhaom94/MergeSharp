@@ -55,7 +55,7 @@ public class Node
 
     }
 
-    public void Send(SyncProtocol msg)
+    public void Send(NetworkProtocol msg)
     {
        // if stream is null get stream
         if (this.stream == null)

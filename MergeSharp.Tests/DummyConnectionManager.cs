@@ -28,17 +28,17 @@ namespace MergeSharp
 
         public int nodeIdx;
 
-        public event EventHandler<SyncMsgEventArgs> UpdateSyncRecievedHandleEvent;
-        public event RecivedSyncEventHandler RecivedSyncEvent;
+        public event EventHandler<SyncMsgEventArgs> ReplicationManagerSyncMsgHandlerEvent;
+        public event ReceivedSyncEventHandler RecivedSyncEvent;
 
-        SyncProtocol recievedBuffer;
+        NetworkProtocol recievedBuffer;
         public DummyConnectionManager(DummyNode[] nodes, int replicaIndex)
         {
             this.nodes = nodes;
             this.nodeIdx = replicaIndex;
         }
 
-        public void BroadCast(SyncProtocol msg)
+        public void BroadCast(NetworkProtocol msg)
         {
             foreach (var n in this.nodes)
             {   
@@ -56,10 +56,10 @@ namespace MergeSharp
 
         public void RegisterCRDTRequestHandler(EventHandler<SyncMsgEventArgs> handler)
         {
-            this.UpdateSyncRecievedHandleEvent += handler;
+            this.ReplicationManagerSyncMsgHandlerEvent += handler;
         }
 
-        public void Send(SyncProtocol msg, ConnectionEndpoint reciever)
+        public void Send(NetworkProtocol msg, ConnectionEndpoint reciever)
         {
             DummyNode node = (DummyNode) reciever;
             node.recivingConnectionManager.Recieve(msg);
@@ -67,7 +67,7 @@ namespace MergeSharp
 
 
 
-        public void Recieve(SyncProtocol msg)
+        public void Recieve(NetworkProtocol msg)
         {
             this.recievedBuffer = msg;
             this.RecievedSyncMsg();
@@ -75,7 +75,7 @@ namespace MergeSharp
 
 
 
-        public void PropagateSyncMsg(SyncProtocol msg)
+        public void PropagateSyncMsg(NetworkProtocol msg)
         {
             this.BroadCast(msg);
         }
@@ -83,7 +83,7 @@ namespace MergeSharp
         public void RecievedSyncMsg()
         {
             SyncMsgEventArgs args = new SyncMsgEventArgs(this.recievedBuffer);
-            this.UpdateSyncRecievedHandleEvent(this, args);
+            this.ReplicationManagerSyncMsgHandlerEvent(this, args);
         }
 
         public int CurMemberPosition()

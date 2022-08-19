@@ -7,6 +7,12 @@ using System.Reflection.Emit;
 
 namespace MergeSharp;
 
+
+/// <summary>
+/// To create a wrapped Proxy class of CRDT types. Doing so allows the ReplicationManager
+/// to intercept update operations and perform the necessary synchronization without the
+/// need to change the original CRDT implementation.
+/// </summary>
 internal class ProxyBuilder
 {
     private AssemblyName aName;
@@ -45,7 +51,8 @@ internal class ProxyBuilder
     public Type BuildProxiedClass(Type type)
     {
 
-        TypeBuilder tb = mb.DefineType(type.Name + "Proxy", TypeAttributes.Public | TypeAttributes.Class, type);
+        TypeBuilder tb = mb.DefineType(type.ToString() + "Proxy", TypeAttributes.Public | TypeAttributes.Class, type);
+
 
         foreach (var method in this.GetMethodsToWrap(type))
         {

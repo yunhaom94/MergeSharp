@@ -5,8 +5,13 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
-    <ItemGroup>
+  <ItemGroup>
     <PackageReference Include="NetCoreServer" Version="6.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../MergeSharp/MergeSharp.csproj" />
+    <ProjectReference Include="../../MergeSharp.TCPConnectionManager/TCPConnectionManager.csproj" />
   </ItemGroup>
 
 </Project>
