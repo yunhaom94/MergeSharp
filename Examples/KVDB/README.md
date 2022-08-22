@@ -3,8 +3,7 @@
 ## How to run the servers:
 1. Set-up .Net 6.0
 2. Build with `dotnet build` or other configuration
-3. For #n of nodes you want, make n copies of `cluster_config_example.json`, where in each of the copy, make n copies of 
-
+3. For #n of nodes you want, make n copies of `cluster_config_example.json`, where in each of the copy, repeat the following for n times
 ```
 {
         "nodeid": [node id, from 0 to n], 
