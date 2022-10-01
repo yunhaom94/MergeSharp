@@ -38,7 +38,7 @@ namespace MergeSharp
         private ProxyBuilder proxyBuilder;
         // TODO: maybe add secondary table so each type can have a different lookup table
         // or maybe dedicated storage
-        // second_table = { guid: pimary_table} primary_table = { guid: object }
+        // second_table = { guid: primary_table} primary_table = { guid: object }
         private IDictionary<Guid, CRDT> objectLookupTable;
         private Dictionary<string, Type> registeredTypes;
         // ===============Other helpers================
@@ -69,7 +69,7 @@ namespace MergeSharp
             this.logger = logger ?? NullLogger.Instance;
             this.observers = new List<IObserver<ReceivedSyncUpdateInfo>>();
 
-            this.connectionManager.ReplicationManagerSyncMsgHandlerEvent += HandleRecievedSyncUpdate;
+            this.connectionManager.ReplicationManagerSyncMsgHandlerEvent += HandleReceivedSyncUpdate;
             this.connectionManager.Start();
 
         }
@@ -158,10 +158,10 @@ namespace MergeSharp
         }
 
         /// <summary>
-        /// Regsiter all types in the assembly under namespace "MergeSharp"
+        /// Register all types in the assembly under namespace "MergeSharp"
         /// // TODO: make a namespace just for types
         /// </summary>
-        public void AutoTypeResgistration()
+        public void AutoTypeRegistration()
         {
             
         }
@@ -244,7 +244,7 @@ namespace MergeSharp
         }
 
 
-        private void HandleRecievedSyncUpdate(object sender, SyncMsgEventArgs e)
+        private void HandleReceivedSyncUpdate(object sender, SyncMsgEventArgs e)
         {
 
             NetworkProtocol msg = e.msg;
@@ -252,10 +252,10 @@ namespace MergeSharp
             switch (msg.syncMsgType)
             {
                 case NetworkProtocol.SyncMsgType.CRDTMsg:
-                    this.RecievedUpdateSyncMsg(msg.uid, msg.message);
+                    this.ReceivedUpdateSyncMsg(msg.uid, msg.message);
                     break;
                 case NetworkProtocol.SyncMsgType.ManagerMsg_Create:
-                    this.RecievedNewObjectSyncMsg(msg.uid, msg.type);
+                    this.ReceivedNewObjectSyncMsg(msg.uid, msg.type);
                     break;
             }
 
@@ -264,7 +264,7 @@ namespace MergeSharp
 
 
         // TODO: ReplicatedDataTypes change this
-        private void RecievedNewObjectSyncMsg(Guid uid, string crdtType)
+        private void ReceivedNewObjectSyncMsg(Guid uid, string crdtType)
         {
 
             if (!this.registeredTypes.ContainsKey(crdtType))
@@ -280,8 +280,8 @@ namespace MergeSharp
 
         }
 
-        // Apply a synchroized update to a CRDT object, this method is thread safe
-        private void RecievedUpdateSyncMsg(Guid uid, byte[] msg)
+        // Apply a synchronized update to a CRDT object, this method is thread safe
+        private void ReceivedUpdateSyncMsg(Guid uid, byte[] msg)
         {
             CRDT crdtObject = this.objectLookupTable[uid];
 

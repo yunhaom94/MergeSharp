@@ -63,7 +63,7 @@ internal class ProxyBuilder
                                     method.GetParameters().Select(p => p.ParameterType).ToArray());
             var il = methodBuilder.GetILGenerator();
             il.Emit(OpCodes.Ldarg_0);
-            // load all of the orignal method arugments into the stack
+            // load all of the original method arguments into the stack
             for (int i = 0; i < method.GetParameters().Length; i++)
             {
                 il.Emit(OpCodes.Ldarg, i + 1);

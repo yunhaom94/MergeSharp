@@ -20,7 +20,7 @@ public static class Global
         });
         logger = loggerFactory.CreateLogger("Logging");
 
-        logger.LogInformation("Initalizing KVDB");
+        logger.LogInformation("Initializing KVDB");
 
         cluster = new ClusterManager();
         cluster.InitClusterSettings(clusterInfoFile);

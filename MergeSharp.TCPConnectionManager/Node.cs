@@ -17,7 +17,7 @@ public class Node
     // port
     public int port { get; private set; }
 
-    // tcp sessoion
+    // tcp session
     public TcpClient tcpSession { get; private set; }
 
     public Stream stream { get; private set; } = null;

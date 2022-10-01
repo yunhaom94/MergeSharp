@@ -37,7 +37,7 @@ class ManagerServer
         this.Run();
     }
 
-    public Task HandleRecieved(TcpClient client, CancellationToken ct)
+    public Task HandleReceived(TcpClient client, CancellationToken ct)
     {
         NetworkStream ns = client.GetStream();
 
@@ -106,7 +106,7 @@ class ManagerServer
 
 
         // use task to accept new clients
-        Task accpetClientTask = Task.Run(async () =>
+        Task acceptClientTask = Task.Run(async () =>
         {
             ct.ThrowIfCancellationRequested();
             while (true)
@@ -116,7 +116,7 @@ class ManagerServer
 
                 //Console.WriteLine("Client connected.");
 
-                var t = HandleRecieved(client, ct);
+                var t = HandleReceived(client, ct);
                 Connections.Add(new Connection() { client = client, task = t });
             }
 
@@ -128,7 +128,7 @@ class ManagerServer
     public void Stop()
     {
 
-        // disconnet all clients from connections list
+        // disconnect all clients from connections list
         foreach (var c in Connections)
         {
             c.client.Close();
