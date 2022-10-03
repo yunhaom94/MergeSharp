@@ -44,8 +44,30 @@ public class TPSetTests
 
     }
 
+    [Fact]
+    public void TrueEquals()
+    {
+        TPSet<string> set = new();
+        set.Add("a");
+        set.Add("b");
 
+        TPSet<string> set2 = new();
+        set2.Add("a");
+        set2.Add("b");
 
+        Assert.True(set.Equals(set2));
+    }
 
-    
+    [Fact]
+    public void FalseEquals()
+    {
+        TPSet<string> set = new();
+        set.Add("a");
+        set.Add("b");
+
+        TPSet<string> set2 = new();
+        set2.Add("c");
+
+        Assert.False(set.Equals(set2));
+    }
 }
