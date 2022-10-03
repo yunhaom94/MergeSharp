@@ -139,8 +139,8 @@ public class TPSet<T> : CRDT, ICollection<T>
 
     public override void ApplySynchronizedUpdate(PropagationMessage ReceivedUpdate)
     {
-        TPSetMsg<T> recieved = (TPSetMsg<T>)ReceivedUpdate;
-        this.Merge(recieved);
+        TPSetMsg<T> received = (TPSetMsg<T>)ReceivedUpdate;
+        this.Merge(received);
     }
 
     public override PropagationMessage DecodePropagationMessage(byte[] input)

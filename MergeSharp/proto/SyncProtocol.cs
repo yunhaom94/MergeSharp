@@ -33,7 +33,7 @@ namespace MergeSharp
         }
 
         /// <summary>
-        /// A simple json serialzation of the replication message
+        /// A simple json serialization of the replication message
         /// </summary>
         /// <returns></returns>
         public byte[] Encode()
@@ -47,7 +47,7 @@ namespace MergeSharp
         }
 
         /// <summary>
-        /// Decode a json serialzation of a replication message
+        /// Decode a json serialization of a replication message
         /// </summary>
         /// <param name="msg"></param>
         public static NetworkProtocol Decode(byte[] msg)

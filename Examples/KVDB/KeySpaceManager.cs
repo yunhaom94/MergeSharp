@@ -22,7 +22,7 @@ public class KeySpaceManager : IObserver<ReceivedSyncUpdateInfo>
         keySpaces = new Dictionary<string, Guid>();
     }
 
-    public void InitlizeKeySpace()
+    public void InitializeKeySpace()
     {
         // get list of TCPConnectionManager nodes from config file
         List<MergeSharp.TCPConnectionManager.Node> tmNodes = new List<MergeSharp.TCPConnectionManager.Node>();
@@ -119,14 +119,14 @@ public class KeySpaceManager : IObserver<ReceivedSyncUpdateInfo>
     private List<string> LastKeySpaceSet = new List<string>(); 
     public void OnNext(ReceivedSyncUpdateInfo value)
     {
-        // TODO: find a more optmized way to do this
+        // TODO: find a more optimized way to do this
         // if guid is 0, then this is the key space set
         Console.WriteLine("1");
         if (value.guid == Guid.Empty)
         {
             Console.WriteLine("2");
             var newSet = replicatedKeySet.LookupAll();
-            // compare the differnce between new and old keyspace set
+            // compare the difference between new and old keyspace set
             var diff = newSet.Except(LastKeySpaceSet);
             foreach (var item in diff)
             {

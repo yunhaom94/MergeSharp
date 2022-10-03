@@ -89,7 +89,7 @@ public class ClusterManager
 
         Global.logger.LogInformation(listingNodes.ToString());
         
-        // pirnt self node info
+        // print self node info
         Global.logger.LogInformation("Self node: " + selfNode.nodeid + " - " + selfNode.address + ":" + selfNode.port.ToString());
 
 

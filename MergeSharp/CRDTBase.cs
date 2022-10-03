@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace MergeSharp
 {
 
-    // a protfolio of types
+    // a portfolio of types
     public enum ReplicatedDataTypes
     {
         PNCounter,

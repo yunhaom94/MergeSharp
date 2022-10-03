@@ -1,6 +1,6 @@
 # MergeSharp
 
-MergeSharp is a fast, lightweight and modular framework of Conflict-free Replicated Datatypes built for C# .Net. You can use it anywhere from IPC communication, to P2P collaborative systems thanks to its modularity. New CRDTs and communication methods can be easily added for extended capabilities that taloried to individual's need, and a portfolio of CRDTs are provided out-of-the-box.
+MergeSharp is a fast, lightweight and modular framework of Conflict-free Replicated Datatypes built for C# .Net. You can use it anywhere from IPC communication, to P2P collaborative systems thanks to its modularity. New CRDTs and communication methods can be easily added for extended capabilities that tailored to individual's need, and a portfolio of CRDTs are provided out-of-the-box.
 
 ## Overview
 

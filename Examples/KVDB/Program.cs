@@ -23,7 +23,7 @@ class Program
         try
         {
             server.Start();
-            Global.ksm.InitlizeKeySpace();
+            Global.ksm.InitializeKeySpace();
          
             Global.logger.LogInformation("Server started.");
             Global.logger.LogInformation("Press enter to stop the server.");

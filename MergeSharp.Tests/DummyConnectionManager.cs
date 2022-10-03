@@ -8,7 +8,7 @@ namespace MergeSharp
     public class DummyNode : ConnectionEndpoint
     {
         public int id;
-        public DummyConnectionManager recivingConnectionManager;
+        public DummyConnectionManager receivingConnectionManager;
 
         public DummyNode(int id)
         {
@@ -29,9 +29,9 @@ namespace MergeSharp
         public int nodeIdx;
 
         public event EventHandler<SyncMsgEventArgs> ReplicationManagerSyncMsgHandlerEvent;
-        public event ReceivedSyncEventHandler RecivedSyncEvent;
+        public event ReceivedSyncEventHandler ReceivedSyncEvent;
 
-        NetworkProtocol recievedBuffer;
+        NetworkProtocol receivedBuffer;
         public DummyConnectionManager(DummyNode[] nodes, int replicaIndex)
         {
             this.nodes = nodes;
@@ -59,18 +59,18 @@ namespace MergeSharp
             this.ReplicationManagerSyncMsgHandlerEvent += handler;
         }
 
-        public void Send(NetworkProtocol msg, ConnectionEndpoint reciever)
+        public void Send(NetworkProtocol msg, ConnectionEndpoint receiver)
         {
-            DummyNode node = (DummyNode) reciever;
-            node.recivingConnectionManager.Recieve(msg);
+            DummyNode node = (DummyNode) receiver;
+            node.receivingConnectionManager.Receive(msg);
         }
 
 
 
-        public void Recieve(NetworkProtocol msg)
+        public void Receive(NetworkProtocol msg)
         {
-            this.recievedBuffer = msg;
-            this.RecievedSyncMsg();
+            this.receivedBuffer = msg;
+            this.ReceivedSyncMsg();
         }
 
 
@@ -80,9 +80,9 @@ namespace MergeSharp
             this.BroadCast(msg);
         }
 
-        public void RecievedSyncMsg()
+        public void ReceivedSyncMsg()
         {
-            SyncMsgEventArgs args = new SyncMsgEventArgs(this.recievedBuffer);
+            SyncMsgEventArgs args = new SyncMsgEventArgs(this.receivedBuffer);
             this.ReplicationManagerSyncMsgHandlerEvent(this, args);
         }
 

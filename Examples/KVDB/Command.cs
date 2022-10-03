@@ -85,7 +85,7 @@ public class Command
                 }
                 else
                 {
-                    throw new Exception("Unkown line parsed " + line);
+                    throw new Exception("Unknown line parsed " + line);
                 }
             }
             // last param

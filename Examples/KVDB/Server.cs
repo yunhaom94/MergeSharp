@@ -10,7 +10,7 @@ namespace KVDB;
 
 public class ConnectionSession : TcpSession
 {
-    private int state = 0; // 0 = searching for 'f', 1 = completeting header, 2 = completetting content 
+    private int state = 0; // 0 = searching for 'f', 1 = completing header, 2 = completing content 
     private int headerReadCount, contentReadCount;
     private byte[] headerRead = new byte[MessagePacket.HEADER_SIZE - 1];
     private byte[] contentRead;
@@ -86,7 +86,7 @@ public class ConnectionSession : TcpSession
                     contentReadCount += leftToRead;
 
                     MessagePacket msg = new MessagePacket(src, contentlen, Encoding.UTF8.GetString(contentRead), this);
-                    Global.logger.LogDebug("Recieveing msg:\n " + msg);
+                    Global.logger.LogDebug("Receiving msg:\n " + msg);
                     //this.reqQueue.Writer.WriteAsync(msg);
 
 

@@ -31,8 +31,8 @@ public class ReplicationManagersPNCTests : IDisposable
             DummyConnectionManager cm0 = new DummyConnectionManager(nodes, 0);
             DummyConnectionManager cm1 = new DummyConnectionManager(nodes, 1);
 
-            n0.recivingConnectionManager = cm0;
-            n1.recivingConnectionManager = cm1;
+            n0.receivingConnectionManager = cm0;
+            n1.receivingConnectionManager = cm1;
 
             this.rm0 = new ReplicationManager(cm0, logger: logger);
             this.rm1 = new ReplicationManager(cm1, logger: logger);
@@ -145,8 +145,8 @@ public class ReplicationManagers2PSetTests : IDisposable
             DummyConnectionManager cm0 = new DummyConnectionManager(nodes, 0);
             DummyConnectionManager cm1 = new DummyConnectionManager(nodes, 1);
 
-            n0.recivingConnectionManager = cm0;
-            n1.recivingConnectionManager = cm1;
+            n0.receivingConnectionManager = cm0;
+            n1.receivingConnectionManager = cm1;
 
             this.rm0 = new ReplicationManager(cm0);
             this.rm1 = new ReplicationManager(cm1);
