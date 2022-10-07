@@ -101,7 +101,7 @@ public class TPSet<T> : CRDT, ICollection<T>
         if (obj is TPSet<T>)
         {
             var other = (TPSet<T>)obj;
-            return this.LookupAll().Count == other.LookupAll().Count && other.LookupAll().All(this.Contains);
+            return this.LookupAll().SequenceEqual(other.LookupAll());
         }
         
         return false;
