@@ -101,14 +101,9 @@ public class TPSet<T> : CRDT, ICollection<T>
         if (obj is TPSet<T>)
         {
             var other = (TPSet<T>)obj;
-            foreach (var item in this.LookupAll())
-            {
-                if (!other.Contains(item))
-                {
-                    return false;
-                }
-            }
+            return this.LookupAll().SequenceEqual(other.LookupAll());
         }
+        
         return false;
         
     }
