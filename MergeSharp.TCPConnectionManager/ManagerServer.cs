@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using ProtoBuf;
+using System.Net;
 
 namespace MergeSharp.TCPConnectionManager;
 
@@ -97,7 +98,7 @@ class ManagerServer
         cts = new CancellationTokenSource();
         CancellationToken ct = cts.Token;
 
-        this.listener = new TcpListener(this.self.ip, this.self.port);
+        this.listener = new TcpListener(IPAddress.Parse("0.0.0.0"), this.self.port);
         this.listener.Start();
 
         //Console.WriteLine("Manager server started.");

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using MergeSharp;
 using MergeSharp.TCPConnectionManager;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,7 @@ namespace KVDB;
 public class KeySpaceManager : IObserver<ReceivedSyncUpdateInfo>
 {
     public Dictionary<string, Guid> keySpaces;
+    public bool keySpaceInitialized = false;
 
     private ConnectionManager cm;
     private ReplicationManager rm;
@@ -27,10 +29,20 @@ public class KeySpaceManager : IObserver<ReceivedSyncUpdateInfo>
         // get list of TCPConnectionManager nodes from config file
         List<MergeSharp.TCPConnectionManager.Node> tmNodes = new List<MergeSharp.TCPConnectionManager.Node>();
         MergeSharp.TCPConnectionManager.Node selfNode = null;
-        foreach (var n in Global.cluster.nodes)
+
+        // wait for connection manager to connect to all nodes
+        Global.logger.LogInformation("Waiting for all nodes to be live");
+
+        Parallel.ForEach(Global.cluster.nodes, n =>
         {
             MergeSharp.TCPConnectionManager.Node node = new MergeSharp.TCPConnectionManager.Node(n.address, n.commPort, n.isSelf);
-            tmNodes.Add(node);
+            
+            // lock on tmNodes
+            lock (tmNodes)
+            {
+                tmNodes.Add(node);
+            }
+
             if (n.isSelf)
             {
                 selfNode = node;
@@ -47,8 +59,7 @@ public class KeySpaceManager : IObserver<ReceivedSyncUpdateInfo>
                     }
                     catch (SocketException)
                     {
-                        // TODO: add timeout here
-                        System.Threading.Thread.Sleep(1000);
+                        System.Threading.Thread.Sleep(2000);
                         Global.logger.LogDebug("{0}:{1} not yet live", n.address, n.port);
                     }
                 }
@@ -57,7 +68,9 @@ public class KeySpaceManager : IObserver<ReceivedSyncUpdateInfo>
                 tempConnect.Close();
 
             }
-        }
+        });
+
+        Global.logger.LogInformation("All nodes live");
 
         cm = new ConnectionManager(tmNodes, selfNode, Global.logger);
         rm = new ReplicationManager(cm);
@@ -93,6 +106,7 @@ public class KeySpaceManager : IObserver<ReceivedSyncUpdateInfo>
         rm.RegisterType<PNCounter>();
 
         Global.logger.LogInformation("Key Space Set Initialized");    
+        keySpaceInitialized = true;
     }
 
     public void CreateNewKVPair<T>(string key) where T : CRDT
