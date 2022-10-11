@@ -42,13 +42,6 @@ Logging Level: Debug = 1, Information = 2, Warning = 3, Error = 4, Critical = 5,
         Global.Init(clusterConfig, debugLevel);
         Server server = new Server(IPAddress.Parse("0.0.0.0"), Global.cluster.selfNode.port);
 
-        
-        Global.logger.LogDebug("test debug");
-        Global.logger.LogInformation("test info");
-        Global.logger.LogWarning("test warning");
-        Global.logger.LogError("test error");
-        Global.logger.LogCritical("test critical");
-
         try
         {
             server.Start();
