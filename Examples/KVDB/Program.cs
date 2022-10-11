@@ -18,7 +18,7 @@ class Program
 
 
         Global.Init(clusterSettings);
-        Server server = new Server(IPAddress.Parse(Global.cluster.selfNode.address), Global.cluster.selfNode.port);
+        Server server = new Server(IPAddress.Parse("0.0.0.0"), Global.cluster.selfNode.port);
 
         try
         {
