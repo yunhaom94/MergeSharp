@@ -27,6 +27,11 @@ public class ConnectionSession : TcpSession
 
     protected override void OnReceived(byte[] buffer, long offset, long size)
     {
+        if (!Global.ksm.keySpaceInitialized)
+        {
+            this.Send(Encoding.UTF8.GetBytes("Server not yet initialized"));
+            return;
+        }
 
         int leftToRead;
         for (long i = offset; i < offset + size; i++)
@@ -119,7 +124,7 @@ public class Server : TcpServer
     }
 
     protected override TcpSession CreateSession()
-    {
+    {   
         return new ConnectionSession(this);
     }
 
