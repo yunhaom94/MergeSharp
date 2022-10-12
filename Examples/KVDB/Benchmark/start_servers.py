@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+import datetime
+import time
 import json
 import os
 from re import sub
@@ -64,32 +66,53 @@ def build():
 
 # distribute server binaries to all servers in servers_list
 def distribute(servers_list: list, cluster_config_dict: dict):
+
+    # package the server binaries with tar
+    print("Packaging KVDB server...")
+    subprocess.run(["tar", "-czvf", "kvdb.tar.gz", "-C", f"../bin/Release/net6.0/{TARGET_BUILD_PLATFORM}/", "."], stdout=subprocess.DEVNULL)
+
     for ip in servers_list:
         print("Sending KVDB server to " + ip + "...")
         # copy KVDB server binary
-        subprocess.run(["scp", "-r", f"../bin/Release/net6.0/{TARGET_BUILD_PLATFORM}/", f"{ip}:{KVDB_REMOTE_BIN_PATH}"])
+        subprocess.run(["scp", "kvdb.tar.gz", f"{ip}:{KVDB_REMOTE_BIN_PATH}"], stdout=subprocess.DEVNULL)
 
         # copy cluster_config.node_id.json
-        subprocess.run(["scp", cluster_config_dict[ip], f"{ip}:{KVDB_REMOTE_BIN_PATH}"])
+        subprocess.run(["scp", cluster_config_dict[ip], f"{ip}:{KVDB_REMOTE_BIN_PATH}"], stdout=subprocess.DEVNULL)
+
+        # copy start_server_host.sh
+        subprocess.run(["scp", "start_server_host.sh", f"{ip}:{KVDB_REMOTE_BIN_PATH}"], stdout=subprocess.DEVNULL) 
+
+        # make a new directory
+        subprocess.run([f"ssh {ip} \"mkdir -p {KVDB_REMOTE_BIN_PATH}/kvdb\""], shell=True)
+
+        # extract the server binaries
+        subprocess.run([f"ssh {ip} \"tar -xzvf {KVDB_REMOTE_BIN_PATH}/kvdb.tar.gz -C {KVDB_REMOTE_BIN_PATH}/kvdb\""], shell=True, stdout=subprocess.DEVNULL)
 
         # change access permission
-        subprocess.run(["ssh", ip, "chmod", "777", f"{KVDB_REMOTE_BIN_PATH}/{TARGET_BUILD_PLATFORM}/KVDB"])
+        subprocess.run([f"ssh {ip} \"chmod +x {KVDB_REMOTE_BIN_PATH}/start_server_host.sh\""], shell=True)
+        
 
+# run the KVDB server on the remote server, and redirect the output to a log file, and run it in the background
+def start_server(ip):
+        print("Starting KVDB server on " + ip + "...")
         # start server
-        subprocess.run(["ssh", ip, f"{KVDB_REMOTE_BIN_PATH}/{TARGET_BUILD_PLATFORM}/KVDB", f"{KVDB_REMOTE_BIN_PATH}/{cluster_config_dict[ip]}"])
+
+        subprocess.run([f"ssh {ip} \"{KVDB_REMOTE_BIN_PATH}/start_server_host.sh {cluster_config_dict[ip]}\""], shell=True)
+
 
 ############################################### Clean up ###############################################
+def stop_servers(ip):
+    print("Stopping KVDB server on " + ip + "...")
+    subprocess.run([f"ssh {ip} \"killall -9 KVDB\""], shell=True)
 
-if __name__ == "__main__":
-    servers_list = ["206.12.97.242"]
+def clean_up(ip):
+    print("Cleaning up KVDB server on " + ip + "...")
+    subprocess.run([f"ssh {ip} \"rm -rf {KVDB_REMOTE_BIN_PATH}/*\""], shell=True)
 
-    print("initiating KVDB servers...")
+def clean_up_local():
+    print("Cleaning up local files...")
+    subprocess.run(["rm", "-rf", "kvdb.tar.gz"], stdout=subprocess.DEVNULL)
+    subprocess.run(["rm cluster_config.*.json"], shell=True)
+    
 
-    cluster_config_dict = generate_cluster_configs(servers_list)
-
-
-
-    build()
-
-    distribute(servers_list, cluster_config_dict)
 
