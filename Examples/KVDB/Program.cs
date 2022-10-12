@@ -48,8 +48,15 @@ Logging Level: Debug = 1, Information = 2, Warning = 3, Error = 4, Critical = 5,
             Global.ksm.InitializeKeySpace();
          
             Global.logger.LogInformation("Server started.");
-            Global.logger.LogInformation("Press enter to stop the server.");
-            Console.ReadLine();
+            Global.logger.LogInformation("Press type \"exit\" to stop the server.");
+            while (true)
+            {
+                string input = Console.ReadLine();
+                if (input == "exit")
+                {
+                    break;
+                }
+            }
         }
         catch (Exception e)
         {
