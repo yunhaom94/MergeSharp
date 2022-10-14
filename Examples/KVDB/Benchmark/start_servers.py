@@ -9,7 +9,7 @@ import subprocess
 
 KVDB_REMOTE_BIN_PATH = "~/ms_kvdb"
 KVDB_SERVER_PORT = 8000
-TARGET_BUILD_PLATFORM = "ubuntu.20.04-x64"
+TARGET_BUILD_PLATFORM = "ubuntu.22.04-x64"
 
 ############################################### Config File Generation ###############################################
 # generate cluster_config for each server
@@ -93,17 +93,24 @@ def distribute(servers_list: list, cluster_config_dict: dict):
         
 
 # run the KVDB server on the remote server, and redirect the output to a log file, and run it in the background
-def start_server(ip):
+def start_server(ip, cluster_config_dict):
         print("Starting KVDB server on " + ip + "...")
         # start server
 
         subprocess.run([f"ssh {ip} \"{KVDB_REMOTE_BIN_PATH}/start_server_host.sh {cluster_config_dict[ip]}\""], shell=True)
 
-
 ############################################### Clean up ###############################################
 def stop_servers(ip):
     print("Stopping KVDB server on " + ip + "...")
     subprocess.run([f"ssh {ip} \"killall -9 KVDB\""], shell=True)
+
+def copy_log_files(ip, exp_name = "default"):
+    print("Copying log files from " + ip + "...")
+    # create a directory for the log files (if not exist)
+    subprocess.run(["mkdir", "-p", f"logs_{exp_name}"])
+    # copy log files with format *.log
+    subprocess.run([f"scp {ip}:{KVDB_REMOTE_BIN_PATH}/*.log logs_{exp_name}/"], shell=True)
+
 
 def clean_up(ip):
     print("Cleaning up KVDB server on " + ip + "...")

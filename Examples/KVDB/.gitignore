@@ -362,3 +362,4 @@ workload.json
 results/
 test.py
 run_multi_bench.py
+kvdb.tar.gz
