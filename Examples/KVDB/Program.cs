@@ -20,7 +20,6 @@ Logging Level: Debug = 1, Information = 2, Warning = 3, Error = 4, Critical = 5,
         if (args.Length == 1)
         {
             clusterConfig = args[0];
-            return 1;
         }
         else if (args.Length == 2)
         {
