@@ -1,3 +1,4 @@
+import imp
 import multiprocessing
 from multiprocessing import Manager, managers
 import string 
@@ -8,10 +9,15 @@ import json
 import timeit
 import subprocess
 from enum import Enum
-from ../Cleint/client.py import *
 from draw import *
 import numpy as np
 from multiprocessing import Process, Pool
+
+import sys
+folder = sys.path.append("../Client")
+from client import *
+
+
 
 
 KEY_LEN = 5
@@ -180,7 +186,7 @@ class PNCExperimentData(ExperimentData):
         if op == "g":
             res = crdt.get(key)
         elif op == "s":
-            res = crdt.set(key, v)
+            res = crdt.set(key)
         elif op == "i":
             res = crdt.inc(key, v)
         elif op == "d":
@@ -361,7 +367,7 @@ class RGExperimentData(GExperimentData):
 
 class TestRunner():
     
-    def __init__(self, nodes, multiplier, data, SharedManager, measuredops = []) -> None:
+    def __init__(self, nodes, multiplier, data:ExperimentData, SharedManager, measuredops = []) -> None:
         self.nodes = nodes
         self.num_nodes = len(nodes)
         self.num_clients = math.ceil(self.num_nodes * multiplier)
@@ -384,12 +390,12 @@ class TestRunner():
         i = 0
         print("Connecting to servers:" + str(self.nodes))
         for _ in range(self.num_clients):
-            adddress = self.nodes[i]
-            ip, port = split_ipport(adddress)
+            address = self.nodes[i]
+            ip, port = split_ipport(address)
             s = Server(ip, port)
             
             if (s.connect() == 0):
-                print("Connection to " + adddress + " failed, exiting")
+                print("Connection to " + address + " failed, exiting")
                 exit()
 
             res.append(s)
@@ -407,7 +413,7 @@ class TestRunner():
         for r in reqs:
             res = self.data.op_execute(self.crdts[0], r)
             if not res[0]:
-                raise Exception("Initialization failed because " + str(res))
+                raise Exception(f"init failed when executing {r} because {str(res)}")
             c += 1
             if (c == len(self.crdts)):
                 c = 0
@@ -513,20 +519,20 @@ class TestRunner():
         self.results.hanlde_latency()
 
         time.sleep(2)
-        mem = 0
         # TODO: this is not working properly, sometime, dont know why
-        for s in self.connections:
-            try:
-                pref = Performance(s)
-                res = pref.get()
-                mem += int(res[1][2].split(":")[1])
-            except:
-                print("Error getting memory: ")
-                print(res)
-                mem = -1
-                break
+        # for s in self.connections:
+        #     try:
+        #         pref = Performance(s)
+        #         res = pref.get()
+        #         mem += int(res[1][2].split(":")[1])
+        #     except:
+        #         print("Error getting memory: ")
+        #         print(res)
+        #         mem = -1
+        #         break
 
-        self.results.mem = mem / len(self.connections)
+        # self.results.mem = mem / len(self.connections)
+        self.results.mem = 0
 
     def close_connection(self):
         for c in self.connections:
@@ -556,12 +562,11 @@ def run_benchmark(workloadfile) -> Results:
     typecode = workload["typecode"]
     total_objects = workload["total_objects"]
 
-
-    prep_ops_pre_obj = workload["prep_ops_pre_obj"]
-    num_reverse = workload["num_reverse"]
-    prep_ratio = workload["prep_ratio"]
+    # TODO: clean this up
+    # prep_ops_pre_obj = workload["prep_ops_pre_obj"]
+    # num_reverse = workload["num_reverse"]
+    # prep_ratio = workload["prep_ratio"]
     
-
     ops_per_object = workload["ops_per_object"]
     op_ratio = workload["op_ratio"]
     target_throughput = workload["target_throughput"]
@@ -577,11 +582,12 @@ def run_benchmark(workloadfile) -> Results:
 
     time.sleep(5)
 
-    print("Preping Ops with " + str(prep_ops_pre_obj) + " prep ops and " + str(num_reverse) + " reverses")
-    tr.prep_ops(prep_ops_pre_obj, prep_ratio, num_reverse)
+    # print("Preping Ops with " + str(prep_ops_pre_obj) + " prep ops and " + str(num_reverse) + " reverses")
+    # tr.prep_ops(prep_ops_pre_obj, prep_ratio, num_reverse)
 
     time.sleep(2)
 
+    # TODO: use a timed result
     print("Total ops:" + str(total_objects * ops_per_object) + " with each obj " + str(ops_per_object) + " ops")
     print("Measuing Throughput")
     tr.benchmark(ops_per_object, op_ratio, target_throughput)

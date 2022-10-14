@@ -8,8 +8,6 @@ BIN_PATH=$KVDB_PATH/kvdb/KVDB
 # change permissions
 chmod 777 $BIN_PATH
 
-echo "Starting kvdb server on $BIN_PATH"
-
 TIME=$(date +"%Y%m%d%H%M%S")
 # get the second extension from Config file
 EXTENSION=$(echo $CONFIG_FILE | cut -d'.' -f2)

@@ -39,6 +39,10 @@ def generate_cluster_configs(servers_list: list) -> dict:
     res = {}
     
     for i in range(len(servers_list)):
+
+        # an ip cannot appear more then once in the servers_list
+        assert servers_list.count(servers_list[i]) == 1
+
         cfg_json = each_server_cfg(i, servers_list)
 
         filename = "cluster_config." + str(i) + ".json"
