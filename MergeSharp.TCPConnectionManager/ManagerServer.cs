@@ -103,9 +103,6 @@ class ManagerServer
 
         //Console.WriteLine("Manager server started.");
 
-
-
-
         // use task to accept new clients
         Task acceptClientTask = Task.Run(async () =>
         {

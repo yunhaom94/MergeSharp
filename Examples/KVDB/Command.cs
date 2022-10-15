@@ -39,7 +39,7 @@ public class Command
 
         List<string> parameters = new List<string>();
 
-        var cmd = msg.content;
+        var cmd = msg.content.Trim('\0');
         var source = msg.msgSrc;
 
         using (StringReader reader = new StringReader(cmd))

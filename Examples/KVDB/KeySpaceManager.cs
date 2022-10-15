@@ -27,15 +27,18 @@ public class KeySpaceManager : IObserver<ReceivedSyncUpdateInfo>
     public void InitializeKeySpace()
     {
         // get list of TCPConnectionManager nodes from config file
-        List<MergeSharp.TCPConnectionManager.Node> tmNodes = new List<MergeSharp.TCPConnectionManager.Node>();
-        MergeSharp.TCPConnectionManager.Node selfNode = null;
+        List<MergeSharp.TCPConnectionManager.Node> tmNodes = new();
+
+        var temp =  Global.cluster.nodes.Where(n => n.isSelf).FirstOrDefault();
+        MergeSharp.TCPConnectionManager.Node selfNode = new(temp.address, temp.commPort, true);
+        cm = new ConnectionManager(tmNodes, selfNode, Global.logger);
 
         // wait for connection manager to connect to all nodes
         Global.logger.LogInformation("Waiting for all nodes to be live");
 
         Parallel.ForEach(Global.cluster.nodes, n =>
         {
-            MergeSharp.TCPConnectionManager.Node node = new MergeSharp.TCPConnectionManager.Node(n.address, n.commPort, n.isSelf);
+            MergeSharp.TCPConnectionManager.Node node = new(n.address, n.commPort, n.isSelf);
             
             // lock on tmNodes
             lock (tmNodes)
@@ -43,36 +46,29 @@ public class KeySpaceManager : IObserver<ReceivedSyncUpdateInfo>
                 tmNodes.Add(node);
             }
 
-            if (n.isSelf)
+            TcpClient tempConnect;
+            while (true)
             {
-                selfNode = node;
-            }
-            else
-            {
-                TcpClient tempConnect;
-                while (true)
+                try 
                 {
-                    try 
-                    {
-                        tempConnect = new TcpClient(n.address, n.port);
-                        break;
-                    }
-                    catch (SocketException)
-                    {
-                        System.Threading.Thread.Sleep(2000);
-                        Global.logger.LogDebug("{0}:{1} not yet live", n.address, n.port);
-                    }
+                    tempConnect = new TcpClient(n.address, n.port);
+                    break;
                 }
-                
-                Global.logger.LogDebug("{0}:{1} detected", n.address, n.port);
-                tempConnect.Close();
-
+                catch (SocketException)
+                {
+                    System.Threading.Thread.Sleep(2000);
+                    Global.logger.LogDebug("{0}:{1} not yet live", n.address, n.port);
+                }
             }
+            
+            Global.logger.LogDebug("{0}:{1} detected", n.address, n.port);
+            tempConnect.Close();
+
+            
         });
 
         Global.logger.LogInformation("All nodes live");
 
-        cm = new ConnectionManager(tmNodes, selfNode, Global.logger);
         rm = new ReplicationManager(cm);
         rm.RegisterType<TPSet<string>>();
 
@@ -88,6 +84,10 @@ public class KeySpaceManager : IObserver<ReceivedSyncUpdateInfo>
         // if self node is the smallest, it is responsible for creating the key space set
         if (Global.cluster.selfNode.nodeid == nodeids.Min())
         {
+            // wait for other nodes to detect that cluster is live
+            // this is a hack, prob should to find a better way to do this
+            System.Threading.Thread.Sleep(3000);
+
             // create a new key space as TPset where GUID is always 0
             var KS_uid = rm.CreateCRDTInstance<TPSet<string>>(out this.replicatedKeySet, Guid.Empty);
             Global.logger.LogDebug("Created new key space set as a 2P-Set with uid: {0}", KS_uid);
@@ -135,16 +135,14 @@ public class KeySpaceManager : IObserver<ReceivedSyncUpdateInfo>
     {
         // TODO: find a more optimized way to do this
         // if guid is 0, then this is the key space set
-        Console.WriteLine("1");
+
         if (value.guid == Guid.Empty)
         {
-            Console.WriteLine("2");
             var newSet = replicatedKeySet.LookupAll();
             // compare the difference between new and old keyspace set
             var diff = newSet.Except(LastKeySpaceSet);
             foreach (var item in diff)
             {
-                Console.WriteLine("3");
                 // if the key is not in the key space set, then it is a new key
                 if (!this.keySpaces.ContainsKey(item.Split("||")[0]))
                 {

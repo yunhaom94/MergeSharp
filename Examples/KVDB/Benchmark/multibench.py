@@ -2,8 +2,10 @@
 
 import csv
 import json
+from pickle import BUILD, TRUE
+from sre_constants import REPEAT
 from benchmark import *
-from startservers import *
+from start_servers import *
 import time
 import traceback
 import datetime 
@@ -18,24 +20,32 @@ import datetime
 
 
 
-REDO = 0
-BUILD_FLAG = False
+REPEAT = 1
 run_name = "default"
 
 
-def run_experiment(wokload_config: dict, prime_variable, secondary_variable, rfilename, server_list, local = False):
+def run_experiment(workload_config: dict, prime_variable, secondary_variable, rfilename, server_list, build_flag=False):
 
     start = datetime.datetime.now()
     print("Currrent time: " + str(start))
     print("Running: " + rfilename)    
 
+
+    # build and distribute
+    if build_flag:
+        build()
+
+    cluster_config_dict = generate_cluster_configs(server_list)
+    
+    
+
     # y-axis
-    primaries = wokload_config[prime_variable]
+    primaries = workload_config[prime_variable]
 
     # more bars
-    secondaries = wokload_config[secondary_variable]
+    secondaries = workload_config[secondary_variable]
 
-    json_dict = wokload_config.copy()
+    json_dict = workload_config.copy()
 
     tp_result = []
     mem_result = []
@@ -61,8 +71,8 @@ def run_experiment(wokload_config: dict, prime_variable, secondary_variable, rfi
 
         for s in secondaries:
             
-            redo = REDO
-            while True:
+            # for repeat
+            for redo in range(REPEAT):
 
                 json_dict[prime_variable] = p
 
@@ -70,37 +80,33 @@ def run_experiment(wokload_config: dict, prime_variable, secondary_variable, rfi
 
                 wlfilename = str(p) + str(s) + ".json"
 
-                if "nodes_pre_server" == primaries:
-                    num_server = p
-                elif "nodes_pre_server" == secondaries:
-                    num_server = s
-                else:
-                    num_server = json_dict["nodes_pre_server"]
+                print(json_dict)
 
-                global BUILD_FLAG
-
-                if local:
-                    i = 1
-                    addresses = start_server(num_server)
-                else:
-                    addresses = start_server_remote(
-                        num_server, server_list[0:wokload_config["use_server"]], BUILD_FLAG)
-
-                #addresses = ["192.168.41.136:5000", "192.168.41.136:5001"]
-                # only build once per run
-                if BUILD_FLAG:
-                    BUILD_FLAG = False
+                # construct addresses which are ip:port in server_list
+                addresses = []
+                for ip in server_list:
+                    addresses.append(ip + ":8000")
 
                 json_dict["nodes"] = addresses
 
                 with open(wlfilename, 'w') as json_file:
                     json.dump(json_dict, json_file)
-                time.sleep(2)
+
+                distribute(server_list, cluster_config_dict)
+                # start servers
+                for ip in server_list:
+                    start_server(ip, cluster_config_dict)
+                
+                # Waiting here for a long time becasue we need to wait for the servers to 
+                # 1. start
+                # 2. join the cluster (servers waits a while before joining the cluster)
+                # 3. initialize the keyspace
+                # TODO: find a better way to do this, maybe check with the servers before running the benchmark
+                time.sleep(10)
 
                 try:
                     r = run_benchmark(wlfilename)
 
-                    redo = 0
                 except Exception as e:
                     traceback.print_exc()
                     print("Error, redoing left " + str(redo))
@@ -113,33 +119,27 @@ def run_experiment(wokload_config: dict, prime_variable, secondary_variable, rfi
                         exit()
 
                 finally:
-                    if local:
-                        i = 2
-                        stop_server()
-                    else:
-                        stop_server_remote(server_list[0:wokload_config["use_server"]])
-                    
+                    for ip in server_list:
+                        copy_log_files(ip)
+                        stop_servers(ip)
+                        clean_up(ip)
+
                     os.remove(wlfilename)
 
-                    if (redo > 0):
-                        redo -= 1
-                        continue
-                    
-
-
+                
 
                 p_result[str(s)] = r.tp
                 pm_result[str(s)] = r.mem
                 latency_results[str(p) + str(s)] = r.latency_result
                 
                 
-                json_dict = wokload_config.copy()
+                json_dict = workload_config.copy()
                 count += 1
                 print(str(count) + "/" + str(total) + " done")
                 end = datetime.datetime.now()
                 print("Elapsed time:" + str(end - start))
                 time.sleep(1)
-                break
+                
 
         tp_result.append(p_result)
         mem_result.append(pm_result)

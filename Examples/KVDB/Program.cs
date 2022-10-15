@@ -20,7 +20,6 @@ Logging Level: Debug = 1, Information = 2, Warning = 3, Error = 4, Critical = 5,
         if (args.Length == 1)
         {
             clusterConfig = args[0];
-            return 1;
         }
         else if (args.Length == 2)
         {
@@ -42,25 +41,26 @@ Logging Level: Debug = 1, Information = 2, Warning = 3, Error = 4, Critical = 5,
         Global.Init(clusterConfig, debugLevel);
         Server server = new Server(IPAddress.Parse("0.0.0.0"), Global.cluster.selfNode.port);
 
-        
-        Global.logger.LogDebug("test debug");
-        Global.logger.LogInformation("test info");
-        Global.logger.LogWarning("test warning");
-        Global.logger.LogError("test error");
-        Global.logger.LogCritical("test critical");
-
         try
         {
             server.Start();
             Global.ksm.InitializeKeySpace();
          
             Global.logger.LogInformation("Server started.");
-            Global.logger.LogInformation("Press enter to stop the server.");
-            Console.ReadLine();
+            Global.logger.LogInformation("Press type \"exit\" to stop the server.");
+            while (true)
+            {
+                string input = Console.ReadLine();
+                if (input == "exit")
+                {
+                    break;
+                }
+            }
         }
         catch (Exception e)
         {
-            Global.logger.LogInformation("Exception: {0}", e.Message);
+            Global.logger.LogError("Exception: {0} at {1}", e.Message, e.StackTrace);
+
         }
         finally
         {
