@@ -47,8 +47,9 @@ public class Node
             this.connected = true;
             return true;
         }
-        catch (SocketException)
+        catch (SocketException e)
         {
+            Console.WriteLine("SocketException: {0}", e);
             this.connected = false;
             return false;
         }

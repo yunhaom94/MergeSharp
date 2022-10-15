@@ -18,12 +18,13 @@ public class ConnectionManager : IConnectionManager
     {
         this.nodes = nodes;
         this.selfNode = self;
-        this.managerServer = new ManagerServer(this.selfNode, this);
         this.logger = logger ?? NullLogger.Instance;
+
+        this.managerServer = new ManagerServer(this.selfNode, this);
     }
 
     // this constructor takes the ip and port for self node, and a list of strings nodes' ip and port as input
-    public ConnectionManager(string ip, string port, IEnumerable<string> nodes)
+    public ConnectionManager(string ip, string port, IEnumerable<string> nodes, ILogger logger = null)
     {
         this.nodes = new List<Node>();
         foreach (string n in nodes)
@@ -40,6 +41,7 @@ public class ConnectionManager : IConnectionManager
             
             this.nodes.Add(node);
         }
+        this.logger = logger ?? NullLogger.Instance;
 
         this.managerServer = new ManagerServer(this.selfNode, this);
     }

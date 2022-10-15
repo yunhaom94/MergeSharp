@@ -59,7 +59,8 @@ Logging Level: Debug = 1, Information = 2, Warning = 3, Error = 4, Critical = 5,
         }
         catch (Exception e)
         {
-            Global.logger.LogInformation("Exception: {0}", e.Message);
+            Global.logger.LogError("Exception: {0} at {1}", e.Message, e.StackTrace);
+
         }
         finally
         {
