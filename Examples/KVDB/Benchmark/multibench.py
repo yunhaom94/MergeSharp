@@ -36,7 +36,7 @@ def run_experiment(workload_config: dict, prime_variable, secondary_variable, rf
         build()
 
     cluster_config_dict = generate_cluster_configs(server_list)
-    distribute(server_list, cluster_config_dict)
+    
     
 
     # y-axis
@@ -92,11 +92,17 @@ def run_experiment(workload_config: dict, prime_variable, secondary_variable, rf
                 with open(wlfilename, 'w') as json_file:
                     json.dump(json_dict, json_file)
 
+                distribute(server_list, cluster_config_dict)
                 # start servers
                 for ip in server_list:
                     start_server(ip, cluster_config_dict)
                 
-                time.sleep(2)
+                # Waiting here for a long time becasue we need to wait for the servers to 
+                # 1. start
+                # 2. join the cluster (servers waits a while before joining the cluster)
+                # 3. initialize the keyspace
+                # TODO: find a better way to do this, maybe check with the servers before running the benchmark
+                time.sleep(10)
 
                 try:
                     r = run_benchmark(wlfilename)

@@ -458,7 +458,10 @@ class TestRunner():
                         res = self.data.op_execute(crdt, req)
                         if req[0] != "g" and res[1][0] != "":
                             last_rid[req[1]] = res[1][0] 
+                        if not res[0]:
+                            print("Error when executing " + str(req) + " because " + str(res))
                     except Exception:
+                        print("Error when executing " + str(req))
                         continue
             else:
                 res = self.data.op_execute(crdt, req)
@@ -585,7 +588,7 @@ def run_benchmark(workloadfile) -> Results:
     # print("Preping Ops with " + str(prep_ops_pre_obj) + " prep ops and " + str(num_reverse) + " reverses")
     # tr.prep_ops(prep_ops_pre_obj, prep_ratio, num_reverse)
 
-    time.sleep(2)
+    #time.sleep(2)
 
     # TODO: use a timed result
     print("Total ops:" + str(total_objects * ops_per_object) + " with each obj " + str(ops_per_object) + " ops")
