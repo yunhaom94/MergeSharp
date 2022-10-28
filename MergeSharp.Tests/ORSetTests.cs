@@ -156,7 +156,7 @@ public class ORSetTests
 
         set1.ApplySynchronizedUpdate(set2.GetLastSynchronizedUpdate());
 
-        Assert.Equal(new List<int> { 1, 2, 3 }, set1.LookupAll().OrderBy(t => t));
+        Assert.Equal(new List<int> {1, 2, 3 }, set1.LookupAll().OrderBy(t => t));
     }
 
 
@@ -166,7 +166,7 @@ public class ORSetTests
         ORSet<int> set1 = new();
         ORSet<int> set2 = new();
 
-        set1.Add(1);
+        set1.Add(1); 
 
         set2.ApplySynchronizedUpdate(set1.GetLastSynchronizedUpdate());
 
@@ -176,14 +176,14 @@ public class ORSetTests
         set1.Add(1);
         set2.Remove(1);
 
-        Assert.Equal(new List<int> { 1 }, set1.LookupAll());
+        Assert.Equal(new List<int> { 1}, set1.LookupAll());
         Assert.Equal(new List<int> { }, set2.LookupAll());
 
         set1.ApplySynchronizedUpdate(set2.GetLastSynchronizedUpdate());
-        set2.ApplySynchronizedUpdate(set1.GetLastSynchronizedUpdate());
+        set2.ApplySynchronizedUpdate(set1.GetLastSynchronizedUpdate()); 
 
-        Assert.Equal(new List<int> { }, set1.LookupAll());
-        Assert.Equal(new List<int> { }, set2.LookupAll());
+        Assert.Equal(new List<int> { 1 }, set1.LookupAll());
+        Assert.Equal(new List<int> {  1}, set2.LookupAll());
     }
 
     [Fact]
@@ -343,14 +343,14 @@ public class ORSetTests
         set1.ApplySynchronizedUpdate(set2.GetLastSynchronizedUpdate());
         set2.ApplySynchronizedUpdate(set1.GetLastSynchronizedUpdate());
 
-        Assert.False(set1.Add(null));
+        set1.Add(null);
         set2.Remove(null);
 
         set2.ApplySynchronizedUpdate(set1.GetLastSynchronizedUpdate());
         set1.ApplySynchronizedUpdate(set2.GetLastSynchronizedUpdate());
 
-        Assert.Equal(new List<string?> { }, set2.ToList());
-        Assert.Equal(new List<string?> { }, set1.ToList());
+        Assert.Equal(new List<string?> { null }, set2.ToList());
+        Assert.Equal(new List<string?> { null }, set1.ToList());
     }
 
     [Fact]
@@ -371,8 +371,8 @@ public class ORSetTests
         set2.ApplySynchronizedUpdate(set1.GetLastSynchronizedUpdate());
         set1.ApplySynchronizedUpdate(set2.GetLastSynchronizedUpdate());
 
-        Assert.Equal(new List<string?> { }, set2.ToList());
-        Assert.Equal(new List<string?> { }, set1.ToList());
+        Assert.Equal(new List<string?> { null }, set2.ToList());
+        Assert.Equal(new List<string?> { null }, set1.ToList());
     }
 
     [Fact]
@@ -419,7 +419,6 @@ public class ORSetTests
     {
         ORSet<string?> set1 = new();
         ORSet<string?> set2 = new();
-        ORSet<string?> set3 = new();
 
         set1.Add(null);
 

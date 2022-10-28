@@ -81,22 +81,12 @@ public class ORSet<T> : CRDT, ICollection<T>
     {
         if (item is null)
         {
-            if (!this.LookupAll().Contains(item))
-            {
                 _ = this.nullAddGuid.Add(Guid.NewGuid());
                 return true;
-
-            }
-            return false;
         }
         else
         {
-            if (this.Contains(item))
-            {
-                return false;
-            }
-
-            if (this.addSet.ContainsKey(item))
+            if (this.addSet.ContainsKey(item) || this.Contains(item))
             {
                 _ = this.addSet[item].Add(Guid.NewGuid());
             }
@@ -166,7 +156,7 @@ public class ORSet<T> : CRDT, ICollection<T>
             nullVal.Add(default); // default is null here
         }
 
-        return inOnlyAdd.Union(inBothSets).Union(nullVal);
+        return inOnlyAdd.Concat(inBothSets).Concat(nullVal).ToList();
     }
 
     public bool Contains(T item)
