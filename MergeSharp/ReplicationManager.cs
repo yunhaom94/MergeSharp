@@ -135,6 +135,16 @@ namespace MergeSharp
         }
 
         /// <summary>
+        /// Get the type of a CRDT instance.
+        /// </summary>
+        /// <param name="id">Instance Guid </param>
+        /// <returns></returns>
+        public Type GetCRDTType(Guid id)
+        {
+            return this.objectLookupTable[id].GetType();
+        }
+
+        /// <summary>
         /// Store a CRDT instance.
         /// </summary>
         /// <param name="crdtObject"> The CRDT instance to store </param>
