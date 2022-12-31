@@ -79,7 +79,7 @@ namespace MergeSharp
             this.Dispose();
         }
 
-        
+
         public void Dispose()
         {
             this.connectionManager.Stop();
@@ -102,7 +102,7 @@ namespace MergeSharp
             CRDT instance;
             var result = this.objectLookupTable.TryGetValue(id, out instance);
             if (result)
-                crdtInstance = (T)instance;
+                crdtInstance = (T) instance;
             else
                 crdtInstance = null;
 
@@ -173,7 +173,7 @@ namespace MergeSharp
         /// </summary>
         public void AutoTypeRegistration()
         {
-            
+
         }
 
         /// <summary>
@@ -191,25 +191,32 @@ namespace MergeSharp
             if (this.registeredTypes.ContainsKey(t.ToString()))
                 throw new ArgumentException("Given type to register " + t.ToString() + " is already registered!");
 
-            // look for the class in the assembly with TypeAntiEntropyProtocol attribute
-            var aeps = Assembly.GetExecutingAssembly().GetTypes().Where(c => c.IsDefined(typeof(TypeAntiEntropyProtocolAttribute)));
+            // get all assemblies
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
+            
             int count = 0;
-            foreach (var proto in aeps)
+            foreach (var asm in assemblies)
             {
-                // get the attribute from the class
-                var attr = proto.GetCustomAttribute<TypeAntiEntropyProtocolAttribute>();
-                if (attr.type.Name == t.Name)
-                {
-                    count++;
-                }
+                // look for the class in the assembly with TypeAntiEntropyProtocol attribute
+                var aeps = asm.GetTypes().Where(c => c.IsDefined(typeof(TypeAntiEntropyProtocolAttribute)));
 
+                foreach (var proto in aeps)
+                {
+                    // get the attribute from the class
+                    var attr = proto.GetCustomAttribute<TypeAntiEntropyProtocolAttribute>();
+                    if (attr.type.Name == t.Name)
+                    {
+                        count++;
+                    }
+
+                }
             }
 
             // if no type is found, throw exception
             if (count == 0)
                 throw new ArgumentException("Given type to register " + t.ToString() + " does not have a corresponding Anti-Entropy protocol!");
-            else if (count> 1)
+            else if (count > 1)
                 throw new ArgumentException("Given type to register " + t.ToString() + " has more than one corresponding Anti-Entropy protocol!");
 
 
@@ -248,7 +255,7 @@ namespace MergeSharp
                 throw new ArgumentException("Given type to create " + typeof(T).ToString() + " is not registered!");
 
             Type t = this.registeredTypes[typeof(T).ToString()];
-            instance = (T)Activator.CreateInstance(t);
+            instance = (T) Activator.CreateInstance(t);
 
             return this.Record<T>(instance, uid);
         }
@@ -278,14 +285,14 @@ namespace MergeSharp
         {
 
             if (!this.registeredTypes.ContainsKey(crdtType))
-                throw new ArgumentException("Given type to create " + crdtType+ " is not registered!");
+                throw new ArgumentException("Given type to create " + crdtType + " is not registered!");
 
 
             var type = this.registeredTypes[crdtType];
-            var crdtObject = (CRDT)Activator.CreateInstance(type);
+            var crdtObject = (CRDT) Activator.CreateInstance(type);
             crdtObject.manager = this;
             crdtObject.uid = uid;
-            
+
             this.objectLookupTable[uid] = crdtObject;
 
         }
