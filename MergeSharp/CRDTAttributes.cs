@@ -53,11 +53,12 @@ public class OperationTypeAttribute : System.Attribute
 internal static class MethodValidator
 {
 
-    public static OpType? Validate(MethodInfo method)
+    public static OpType? Validate(MethodInfo method, Type type)
     {
         var attribute = method.GetCustomAttribute<OperationTypeAttribute>();
+        var typeBelongs = method.DeclaringType == type; // used when inheriting an existing CRDT
 
-        if (attribute is not null)
+        if (attribute is not null && typeBelongs)
         {
             if (!method.IsPublic)
             {

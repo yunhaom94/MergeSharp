@@ -38,7 +38,7 @@ internal class ProxyBuilder
         // for each method in methods, if it has TestStuffAttribute, print it
         foreach (var method in methods)
         {
-            var op = MethodValidator.Validate(method);
+            var op = MethodValidator.Validate(method, type);
             if (op == OpType.Update)
             {
                 result.Add(method);
