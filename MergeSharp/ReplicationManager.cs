@@ -194,12 +194,18 @@ namespace MergeSharp
             // get all assemblies
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            
+
             int count = 0;
             foreach (var asm in assemblies)
             {
+                // if asm does not contain CRDTClassProxyAssembly
+                // this is a problem when running multiple replication managers in the same process
+                if (asm.FullName.Contains("CRDTClassProxyAssembly"))
+                    continue;
+
                 // look for the class in the assembly with TypeAntiEntropyProtocol attribute
                 var aeps = asm.GetTypes().Where(c => c.IsDefined(typeof(TypeAntiEntropyProtocolAttribute)));
+
 
                 foreach (var proto in aeps)
                 {
@@ -210,7 +216,8 @@ namespace MergeSharp
                         count++;
                     }
 
-                }
+                    }
+                
             }
 
             // if no type is found, throw exception
