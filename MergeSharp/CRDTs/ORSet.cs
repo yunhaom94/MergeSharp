@@ -127,7 +127,7 @@ public class ORSet<T> : CRDT, ICollection<T>
     }
 
     [OperationType(OpType.Update)]
-    public void Clear()
+    public virtual void Clear()
     {
         this.addSet.Clear();
         this.removeSet.Clear();
