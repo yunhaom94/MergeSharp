@@ -449,3 +449,27 @@ public class ORSetTests
 #nullable restore
 
 }
+
+public class ORSetMsgTests
+{
+    [Fact]
+    public void EncodeDecode()
+    {
+        ORSet<string> set1 = new();
+        set1.Add("a");
+        set1.Add("b");
+
+        ORSet<string> set2 = new();
+        set2.Add("a");
+        set2.Add("b");
+        set2.Remove("b");
+
+        var encodedMsg2 = set2.GetLastSynchronizedUpdate().Encode();
+        ORSetMsg<string> decodedMsg2 = new();
+        decodedMsg2.Decode(encodedMsg2);
+
+        set1.ApplySynchronizedUpdate(decodedMsg2);
+
+        Assert.Equal(new List<string> { "a", "b" }, set1);
+    }
+}
