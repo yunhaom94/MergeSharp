@@ -90,7 +90,7 @@ public class CSet<T> : CRDT, ICollection<T>
     }
 
     [OperationType(OpType.Update)]
-    public void Clear()
+    public virtual void Clear()
     {
         foreach (var kv in this._addCount)
         {
