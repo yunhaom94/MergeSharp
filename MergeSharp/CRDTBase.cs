@@ -31,14 +31,14 @@ namespace MergeSharp
         /// <param name="input"></param>
         public abstract void Decode(byte[] input);
 
-        
+
     }
 
     /// <summary>
     /// Base class for all CRDT types. See README for more details on implementing new CRDTs.
     /// </summary>
     public abstract class CRDT
-    {   
+    {
         protected readonly ILogger logger;
         public ReplicationManager manager;
         public Guid uid;
@@ -49,7 +49,7 @@ namespace MergeSharp
         }
 
         protected void HasSideEffect()
-        {   
+        {
             if (manager is not null)
                 manager.NewUpdateToSync(this);
         }
@@ -66,7 +66,7 @@ namespace MergeSharp
         /// In state-based CRDTs, this is the Merge() method; in op-based CRDTs, this is the effect-update operation.
         /// </summary>
         /// <param name="ReceivedUpdate">The received synchronization message</param>
-        public abstract void ApplySynchronizedUpdate(PropagationMessage ReceivedUpdate);
+        public abstract void ApplySynchronizedUpdate(PropagationMessage receivedUpdate);
 
         /// <summary>
         /// Deserialize a byte array into an Anti-entropy message for this CRDT and the message type it is using.
@@ -74,7 +74,7 @@ namespace MergeSharp
         /// <param name="input"></param>
         /// <returns></returns>
         public abstract PropagationMessage DecodePropagationMessage(byte[] input);
-        
+
 
 
     }
