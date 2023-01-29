@@ -215,3 +215,27 @@ public class LWWSetTests
     }
 #nullable restore
 }
+
+public class LWWSetMsgTests
+{
+    [Fact]
+    public void EncodeDecode()
+    {
+        LWWSet<string> set1 = new();
+        set1.Add("a");
+        set1.Add("b");
+
+        LWWSet<string> set2 = new();
+        set2.ApplySynchronizedUpdate(set1.GetLastSynchronizedUpdate());
+        set2.Add("c");
+        set2.Remove("a");
+
+        var encodedMsg2 = set2.GetLastSynchronizedUpdate().Encode();
+        LWWSetMsg<string> decodedMsg2 = new();
+        decodedMsg2.Decode(encodedMsg2);
+
+        set1.ApplySynchronizedUpdate(decodedMsg2);
+
+        Assert.Equal(new List<string> { "b", "c" }, set1.ToList());
+    }
+}

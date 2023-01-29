@@ -15,7 +15,7 @@ public class MVRegisterTests
         register.Write("a");
         register.Write("b");
         register.Write("c");
-        Assert.Equal(new List<string> {"c"}, register); 
+        Assert.Equal(new List<string> {"c"}, register);
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class MVRegisterTests
         reg1.ApplySynchronizedUpdate((MVRegisterMsg<string>)reg2.GetLastSynchronizedUpdate());
 
         Assert.Equal(new List<string> { "b", "d" }, reg1);
-    
+
         reg2.ApplySynchronizedUpdate((MVRegisterMsg<string>)reg1.GetLastSynchronizedUpdate());
 
         Assert.Equal(new List<string> { "d", "b" }, reg2);
@@ -54,10 +54,10 @@ public class MVRegisterTests
         reg4.ApplySynchronizedUpdate((MVRegisterMsg<int>)reg2.GetLastSynchronizedUpdate());
         reg4.ApplySynchronizedUpdate((MVRegisterMsg<int>)reg3.GetLastSynchronizedUpdate());
 
-        reg4.Write(4);        
+        reg4.Write(4);
 
         reg1.ApplySynchronizedUpdate((MVRegisterMsg<int>)reg4.GetLastSynchronizedUpdate());
-        
+
         Assert.Equal(new List<int> { 4 }, reg1);
     }
 
@@ -78,10 +78,10 @@ public class MVRegisterTests
         reg4.ApplySynchronizedUpdate((MVRegisterMsg<int>)reg3.GetLastSynchronizedUpdate());
 
         reg1.Write(1);
-        reg4.Write(4);        
+        reg4.Write(4);
 
         reg1.ApplySynchronizedUpdate((MVRegisterMsg<int>)reg4.GetLastSynchronizedUpdate());
-        
+
         Assert.Equal(new List<int> { 1, 4 }, reg1);
     }
 
@@ -93,7 +93,7 @@ public class MVRegisterTests
         reg1.Write("b");
 
         MVRegister<string> reg2 = new();
-    
+
         reg2.ApplySynchronizedUpdate((MVRegisterMsg<string>)reg1.GetLastSynchronizedUpdate());
 
         Assert.Equal(new List<string> { "b" }, reg2);
@@ -101,7 +101,7 @@ public class MVRegisterTests
         reg2.Write("c");
 
         Assert.Equal(new List<string> { "c" }, reg2);
-        
+
         reg1.ApplySynchronizedUpdate((MVRegisterMsg<string>)reg2.GetLastSynchronizedUpdate());
     }
 
@@ -125,4 +125,25 @@ public class MVRegisterTests
         Assert.Equal(new List<int> { 1, 2, 3, 4 }, reg1);
     }
 
+}
+
+public class MVRegisterMsgTests
+{
+    [Fact]
+    public void EncodeDecode()
+    {
+        MVRegister<string> set1 = new();
+        set1.Write("a");
+
+        MVRegister<string> set2 = new();
+        set2.Write("b");
+
+        var encodedMsg2 = set2.GetLastSynchronizedUpdate().Encode();
+        MVRegisterMsg<string> decodedMsg2 = new();
+        decodedMsg2.Decode(encodedMsg2);
+
+        set1.ApplySynchronizedUpdate(decodedMsg2);
+
+        Assert.Equal(new List<string> { "a", "b" }, set1);
+    }
 }

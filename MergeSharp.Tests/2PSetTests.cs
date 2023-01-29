@@ -71,3 +71,27 @@ public class TPSetTests
         Assert.False(set.Equals(set2));
     }
 }
+
+public class TPSetMsgTests
+{
+    [Fact]
+    public void EncodeDecode()
+    {
+        TPSet<string> set = new();
+        set.Add("a");
+        set.Add("b");
+
+        TPSet<string> set2 = new();
+        set2.Add("c");
+        set2.Add("d");
+        set2.Remove("c");
+
+        var encodedMsg2 = set2.GetLastSynchronizedUpdate().Encode();
+        TPSetMsg<string> decodedMsg2 = new();
+        decodedMsg2.Decode(encodedMsg2);
+
+        set.Merge(decodedMsg2);
+
+        Assert.Equal(new List<string> { "a", "b", "d" }, set.LookupAll());
+    }
+}
