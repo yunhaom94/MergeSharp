@@ -14,7 +14,7 @@ public class ReplicationManagersPNCTests : IDisposable
     ReplicationManager rm0, rm1;
 
     public ReplicationManagersPNCTests()
-    {   
+    {
             ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();
@@ -60,13 +60,13 @@ public class ReplicationManagersPNCTests : IDisposable
         pnc1.Increment(10);
         pnc1.Decrement(3);
 
-        var pnc1r = this.rm1.GetCRDT<PNCounter>(uid);   
+        var pnc1r = this.rm1.GetCRDT<PNCounter>(uid);
 
         Assert.Equal(pnc1.Get(), pnc1r.Get());
 
     }
 
-    
+
     [Fact]
     public void RepManagerPNCTest1()
     {
@@ -156,16 +156,6 @@ public class ReplicationManagers2PSetTests : IDisposable
     }
 
     [Fact]
-    public void RegisterMultipleTypesTest()
-    {
-        rm0.RegisterType<PNCounter>();
-        rm1.RegisterType<PNCounter>();
-
-        rm0.RegisterType<TPSet<int>>();
-        rm1.RegisterType<TPSet<int>>();
-    }
-
-    [Fact]
     public void RepManagerTPSTest1()
     {
         Guid uid = this.rm0.CreateCRDTInstance<TPSet<string>>(out TPSet<string> tpset1);
@@ -218,6 +208,44 @@ public class ReplicationManagers2PSetTests : IDisposable
 
     public void Dispose()
     {
-        
+
+    }
+}
+
+
+public class ReplicationManagerRegisterTypesTest : IDisposable
+{
+
+    ReplicationManager rm;
+
+    public ReplicationManagerRegisterTypesTest()
+    {
+            Console.WriteLine("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            DummyNode n0 = new DummyNode(0);
+
+            DummyNode[] nodes = {n0};
+
+            DummyConnectionManager cm0 = new DummyConnectionManager(nodes, 0);
+
+            n0.receivingConnectionManager = cm0;
+
+            this.rm = new ReplicationManager(cm0);
+
+    }
+
+    [Fact]
+    public void RegisterMultipleTypesTest()
+    {
+        rm.RegisterType<PNCounter>();
+        rm.RegisterType<TPSet<int>>();
+        rm.RegisterType<MVRegister<int>>();
+        rm.RegisterType<TPTPGraph>();
+        rm.RegisterType<ORSet<int>>();
+        rm.RegisterType<LWWSet<string>>();
+    }
+
+    public void Dispose()
+    {
+
     }
 }

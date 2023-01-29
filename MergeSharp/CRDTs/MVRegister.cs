@@ -64,7 +64,7 @@ public class MVRegister<T> : CRDT, IEnumerable<T>
     }
 
     [OperationType(OpType.Update)]
-    public void Write(T item)
+    public virtual void Write(T item)
     {
         this._register.Clear();
         bool _ = this._register.Add(item);
@@ -104,7 +104,7 @@ public class MVRegister<T> : CRDT, IEnumerable<T>
     /// Compare this vector clock with the vector clock in the received MVRegisterMsg<T>
     /// to determine what update needs to be made this vector clock.
     /// </summary>
-    /// <returns>Enum ComparisonResults that represents the result of the comparison</returns>    
+    /// <returns>Enum ComparisonResults that represents the result of the comparison</returns>
     private ComparisonResults CompareVectorClocks(Dictionary<Guid, int> receivedVectorClock)
     {
         bool IsNewEntryAdded = false;
