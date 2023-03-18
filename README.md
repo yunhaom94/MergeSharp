@@ -93,5 +93,13 @@ TODO
 ### PN-Counter
 ### Two-Phase Set
 
+### Multi-value Register
+
+### Last-writer-wins Set
+
+### Observed-remove Set
+
+### Two-Phase Two-Phase Graph
+
 
 ## Performance
