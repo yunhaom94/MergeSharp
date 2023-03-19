@@ -10,7 +10,6 @@ This library will allow developers to use CRDTs within their .NET application. M
 Each MergeSharp CRDT consists of two classes: The CRDT Message Class and the CRDT class itself. The CRDT Message Class contains the state that is propagated to other CRDTs so that they are able to merge states. The CRDT class itself contains all of the query, update and merging methods.
 
 ## Two-Phase (TP) Set Message Class
-This is the Message Class for the TP Set Class
 
 ### Create a TP Set Message:
 #### `public TPSetMsg()`, `public TPSetMsg(HashSet<T> addSet, HashSet<T> removeSet)`
@@ -30,7 +29,7 @@ var encodedMsg = set.GetLastSynchronizedUpdate().Encode();
 // Create a new TP Set Message
 TPSetMsg<string> decodedMsg = new();                       
 
-// Decode the the TP Set Message
+// Decode the TP Set Message
 decodedMsg.Decode(encodedMsg);                             
 ```
 
@@ -41,7 +40,7 @@ decodedMsg.Decode(encodedMsg);
 
 #### `public TPSet()`
 
-This constructor creates an empty TP Set
+This constructor creates an empty TP Set.
 
 ```
 TPSet<T> myTPSet = new (); // <T> is a generic type parameter, this must be replaced
@@ -53,13 +52,13 @@ TPSet<T> myTPSet = new (); // <T> is a generic type parameter, this must be repl
 myTPSet.Count
 ```
 
-### Get read only value of a TP Set:
+### Get read-only value of a TP Set:
 
 ```
 myTPSet.IsReadOnly
 ```
 
-### Add to a TP Set:
+### Add an `item` to a TP Set:
 
 #### `public virtual void Add (T item)`
 
@@ -70,11 +69,11 @@ TPSet<string> myTPSet = new ();
 myTPSet.Add("i love crdts");
 ```
 
-### Remove from a TP Set:
+### Remove an `item` from a TP Set:
 
 #### `public virtual bool Remove (T item)`
 
-This method returns `true` if an item was removed, otherwise returns `false`.
+This method returns `true` if the `item` was removed, otherwise returns `false`.
 
 ```
 TPSet<string> myTPSet = new ();
@@ -119,7 +118,7 @@ myTPSet2.Add(11);
 Console.WriteLine(myTPSet1.Equals(myTPSet2)); // False
 ```
 
-### Check if item is in a TP Set:
+### Check if `item` is in a TP Set:
 #### `public bool Contains (T item)`
 This method checks if `item` is in the TP Set.
 ```
@@ -129,14 +128,14 @@ myTPSet.Contains("hi hi hi hi"); // False
 myTPSet.Contains("i love crdts"); // True
 ```
 
-### Get the latest state of a TP Set:
+### Get the latest state of a TP Set as a `PropagationMessage`:
 #### ` public override PropagationMessage GetLastSynchronizedUpdate()`
 This method gets the latest state of the TP Set. This method returns a `PropagationMessage`.
 ```
 PropagationMessage newPropMsg = myTPSet.GetLastSynchronizedUpdate();
 ```
 
-### Apply a state to a TP Set:
+### Apply a state to a TP Set using a `PropagationMessage`:
 #### `public override void ApplySynchronizedUpdate(PropagationMessage ReceivedUpdate)`
 This method applies `ReceivedUpdate` PropagationMessage as an update to a TP Set.
 ```
@@ -152,7 +151,7 @@ set2.Remove("c");
 set.ApplySynchronizedUpdate(set2.GetLastSynchronizedUpdate());
 ```
 
-### Merge the states of a TP Set:
+### Merge the states of a TP Set using TP Set Message:
 #### `public void Merge(TPSetMsg<T> received)`
 This method applies `received` TP Set Message as an update to the TP Set.
 ```
@@ -166,4 +165,10 @@ set2.Add("d");
 set2.Remove("c");
 
 set.Merge((TPSetMsg<string>)set2.GetLastSynchronizedUpdate());
+```
+
+### Get the hash code of a TP Set:
+#### `public override int GetHashCode()`
+```
+myTPSet.GetHashCode();
 ```
