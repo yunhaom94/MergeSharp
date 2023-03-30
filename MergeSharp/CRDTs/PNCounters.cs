@@ -13,13 +13,13 @@ namespace MergeSharp;
 public class PNCounterMsg : PropagationMessage
 {
     /// <summary>
-    /// <c>Dictionary</c> of replicas' positive count.
+    /// <c>Dictionary</c> of replicas' positive counts.
     /// </summary>
     [JsonInclude]
     public Dictionary<Guid, int> pVector;
 
     /// <summary>
-    /// <c>Dictionary</c> of replicas' negative count.
+    /// <c>Dictionary</c> of replicas' negative counts.
     /// </summary>
     [JsonInclude]
     public Dictionary<Guid, int> nVector;
@@ -56,12 +56,12 @@ public class PNCounterMsg : PropagationMessage
 public class PNCounter : CRDT
 {
     /// <summary>
-    /// <c>Dictionary</c> of replicas' positive count.
+    /// <c>Dictionary</c> of replicas' positive counts.
     /// </summary>
     private Dictionary<Guid, int> _pVector;
 
     /// <summary>
-    /// <c>Dictionary</c> of replicas' negative count.
+    /// <c>Dictionary</c> of replicas' negative counts.
     /// </summary>
     private Dictionary<Guid, int> _nVector;
 
