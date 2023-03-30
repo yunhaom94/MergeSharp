@@ -13,13 +13,13 @@ namespace MergeSharp;
 public class PNCounterMsg : PropagationMessage
 {
     /// <summary>
-    /// <c>Dictionary</c> of replicas' positive count.
+    /// <c>Dictionary</c> of replicas' positive counts.
     /// </summary>
     [JsonInclude]
     public Dictionary<Guid, int> pVector;
 
     /// <summary>
-    /// <c>Dictionary</c> of replicas' negative count.
+    /// <c>Dictionary</c> of replicas' negative counts.
     /// </summary>
     [JsonInclude]
     public Dictionary<Guid, int> nVector;
@@ -31,8 +31,8 @@ public class PNCounterMsg : PropagationMessage
     /// <summary>
     /// Parametrized constructor for <c>PNCounterMsg</c>.
     /// </summary>
-    /// <param name="pVector"><c>Dictionary</c> of replicas' positive count.</param>
-    /// <param name="nVector"><c>Dictionary</c> of replicas' negative count.</param>
+    /// <param name="pVector"><c>Dictionary</c> of replicas' positive counts.</param>
+    /// <param name="nVector"><c>Dictionary</c> of replicas' negative counts.</param>
     public PNCounterMsg(Dictionary<Guid, int> pVector, Dictionary<Guid, int> nVector)
     {
         this.pVector = pVector;
@@ -61,12 +61,12 @@ public class PNCounterMsg : PropagationMessage
 public class PNCounter : CRDT
 {
     /// <summary>
-    /// <c>Dictionary</c> of replicas' positive count.
+    /// <c>Dictionary</c> of replicas' positive counts.
     /// </summary>
     private Dictionary<Guid, int> _pVector;
 
     /// <summary>
-    /// <c>Dictionary</c> of replicas' negative count.
+    /// <c>Dictionary</c> of replicas' negative counts.
     /// </summary>
     private Dictionary<Guid, int> _nVector;
 
