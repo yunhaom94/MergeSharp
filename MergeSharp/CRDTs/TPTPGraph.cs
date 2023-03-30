@@ -90,7 +90,7 @@ public class TPTPGraph : CRDT
     /// Method to remove a vertex.
     /// </summary>
     /// <param name="v"><c>Guid</c> of vertex to be removed.</param>
-    /// <returns> <c>True</c> if successfully added.</returns>
+    /// <returns><c>true</c> if successfully added, otherwise <c>false</c>.</returns>
     [OperationType(OpType.Update)]
     public virtual bool RemoveVertex(Guid v)
     {
@@ -110,7 +110,7 @@ public class TPTPGraph : CRDT
     /// </summary>
     /// <param name="v1"><c>Guid</c> of source vertex of the edge.</param>
     /// <param name="v2"><c>Guid</c> of destination vertex of the edge.</param>
-    /// <returns> <c>True</c> if successfully added.</returns>
+    /// <returns><c>true</c> if successfully added, otherwise <c>false</c>.</returns>
     [OperationType(OpType.Update)]
     public virtual bool AddEdge(Guid v1, Guid v2)
     {
@@ -130,7 +130,7 @@ public class TPTPGraph : CRDT
     /// </summary>
     /// <param name="v1"><c>Guid</c> of source vertex of the edge.</param>
     /// <param name="v2"><c>Guid</c> of destination vertex of the edge.</param>
-    /// <returns> <c>True</c> if successfully added.</returns>
+    /// <returns><c>true</c> if successfully added, otherwise <c>false</c>.</returns>
     [OperationType(OpType.Update)]
     public virtual bool RemoveEdge(Guid v1, Guid v2)
     {
@@ -171,7 +171,7 @@ public class TPTPGraph : CRDT
     /// Method that returns if a vertex is in the <c>TPTPGraph</c>.
     /// </summary>
     /// <param name="v"><c>Guid</c> of vertex to be checked.</param>
-    /// <returns><c>True</c> if the vertex is in the <c>TPTPGraph</c>.</returns>
+    /// <returns><c>true</c> if the vertex is in the <c>TPTPGraph</c>, otherwise <c>false</c>.</returns>
     public bool Contains(Guid v)
     {
         return this.LookupVertices().Contains(v);
@@ -182,7 +182,7 @@ public class TPTPGraph : CRDT
     /// </summary>
     /// <param name="v1"><c>Guid</c> of source vertex of the edge.</param>
     /// <param name="v2"><c>Guid</c> of destination vertex of the edge.</param>
-    /// <returns><c>True</c> if the edge is in the <c>TPTPGraph</c>.</returns>
+    /// <returns><c>true</c> if the edge is in the <c>TPTPGraph</c>, otherwise <c>false</c>.</returns>
     public bool Contains(Guid v1, Guid v2)
     {
         return this.LookupEdges().Contains((v1, v2));
