@@ -191,7 +191,7 @@ public class LWWSet<T> : CRDT, ICollection<T>
     }
 
     /// <summary>
-    /// Removes all items from the <c>LWWSet{T}</c>.
+    /// Removes all elements from the <c>LWWSet{T}</c>.
     /// </summary>
     [OperationType(OpType.Update)]
     public virtual void Clear()
