@@ -55,7 +55,7 @@ public class TPTPGraphMsg : PropagationMessage
 }
 
 /// <summary>
-/// The <c>TPTPGraph</c> Class.
+/// Two-Phase Two-Phase Graph. Semantics restrict readdition of vertices and edges after removal.
 /// </summary>
 [ReplicatedType("TPTPGraph")]
 public class TPTPGraph : CRDT
