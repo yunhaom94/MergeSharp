@@ -28,11 +28,6 @@ public class TPTPGraphMsg : PropagationMessage
     {
     }
 
-    /// <summary>
-    /// Parametrized constructor for <c>TPTPGraphMsg</c>.
-    /// </summary>
-    /// <param name = "vertices">A <c>TPSet{Guid}</c> of vertices.</param>
-    /// <param name = "edges">A <c>TPSet{Guid, Guid}</c> of edges.</param>
     public TPTPGraphMsg(TPSet<Guid> vertices, TPSet<(Guid, Guid)> edges)
     {
         this._verticesMsg = (TPSetMsg<Guid>) vertices.GetLastSynchronizedUpdate();

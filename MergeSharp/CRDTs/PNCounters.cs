@@ -28,11 +28,6 @@ public class PNCounterMsg : PropagationMessage
     {
     }
 
-    /// <summary>
-    /// Parametrized constructor for <c>PNCounterMsg</c>.
-    /// </summary>
-    /// <param name="pVector"><c>Dictionary</c> of replicas' positive count.</param>
-    /// <param name="nVector"><c>Dictionary</c> of replicas' negative count.</param>
     public PNCounterMsg(Dictionary<Guid, int> pVector, Dictionary<Guid, int> nVector)
     {
         this.pVector = pVector;
