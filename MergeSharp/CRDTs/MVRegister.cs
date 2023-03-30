@@ -125,7 +125,7 @@ public class MVRegister<T> : CRDT, IEnumerable<T>
     }
 
     /// <summary>
-    /// Uses the ComparisonResults enum to determine if the register with be overwritten or merged with the received register.
+    /// Uses the ComparisonResults enum to determine if the register will be overwritten or merged with the received register.
     /// </summary>
     /// <param name="comparisonResult">ComparisonResults enum which indicates whether the register will be overwritten or merged.</param>
     /// <param name="receivedRegister">Register that will be used for overwriting or merging.</param>
@@ -142,7 +142,7 @@ public class MVRegister<T> : CRDT, IEnumerable<T>
     }
 
     /// <summary>
-    /// Overwrites the register the received register.
+    /// Overwrites the register with the received register.
     /// </summary>
     /// <param name="receivedRegister">Register that will be used to overwrite the register.</param>
     private void OverwriteRegister(HashSet<T> receivedRegister)

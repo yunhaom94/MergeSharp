@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace MergeSharp;
 
 /// <summary>
-/// Propagation Message for the <c>ORSetMsg{T}</c> class.
+/// Propagation Message for the <c>ORSet{T}</c> class.
 /// </summary>
 /// <typeparam name="T">The type stored by the OR-Set</typeparam>
 [TypeAntiEntropyProtocol(typeof(ORSet<>))]
