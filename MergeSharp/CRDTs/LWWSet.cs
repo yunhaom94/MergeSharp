@@ -10,21 +10,46 @@ using System.Text.Json.Serialization;
 
 namespace MergeSharp;
 
+/// <summary>
+/// PropagationMessage for the <c>LWWSetMsg{T}</c>.
+/// </summary>
+/// <typeparam name="T">Type which the <c>LWWSetMsg{T}</c> holds.</typeparam>
 [TypeAntiEntropyProtocol(typeof(LWWSet<>))]
 public class LWWSetMsg<T> : PropagationMessage
 {
+    /// <summary>
+    /// Dictionary of values <c>T</c> and the latest <c>DateTime</c>s they were added to the <c>TPSet{T}</c>.
+    /// </summary>
     [JsonInclude]
     public Dictionary<T, DateTime> addSet { get; private set; }
 
+    /// <summary>
+    /// Dictionary of values <c>T</c> and the latest <c>DateTime</c>s they were removed from the <c>TPSet{T}</c>.
+    /// </summary>
     [JsonInclude]
     public Dictionary<T, DateTime> removeSet { get; private set; }
 
+    /// <summary>
+    /// Is the value <c>null</c> added to the <c>LWWSet{T}</c>.
+    /// </summary>
     [JsonInclude]
     public bool isNullAdded { get; private set; }
+
+    /// <summary>
+    /// Is the value <c>null</c> removed from the <c>LWWSet{T}</c>.
+    /// </summary>
     [JsonInclude]
     public bool isNullRemoved { get; private set; }
+
+    /// <summary>
+    /// Latest <c>DateTime</c> the value <c>null</c> was added to the <c>LWWSet{T}</c>.
+    /// </summary>
     [JsonInclude]
     public DateTime nullAddTime { get; private set; }
+
+    /// <summary>
+    /// Latest <c>DateTime</c> the value <c>null</c> was removed from the <c>LWWSet{T}</c>.
+    /// </summary>
     [JsonInclude]
     public DateTime nullRemoveTime { get; private set; }
 
@@ -43,7 +68,7 @@ public class LWWSetMsg<T> : PropagationMessage
         this.nullRemoveTime = nullRemoveTime;
     }
 
-
+    /// <inheritdoc />
     public override void Decode(byte[] input)
     {
         var json = JsonSerializer.Deserialize<LWWSetMsg<T>>(input);
@@ -55,25 +80,58 @@ public class LWWSetMsg<T> : PropagationMessage
         this.nullRemoveTime = json.nullRemoveTime;
     }
 
+    /// <inheritdoc />
     public override byte[] Encode()
     {
         return JsonSerializer.SerializeToUtf8Bytes(this);
     }
 }
 
+/// <summary>
+/// Last Writer Wins Set. Semantics follow that the last write for a value wins.
+/// </summary>
+/// <typeparam name="T">Type which the <c>LWWSet{T}</c> holds.</typeparam>
 [ReplicatedType("LWWSet")]
 public class LWWSet<T> : CRDT, ICollection<T>
 {
+    /// <summary>
+    /// Dictionary of values <c>T</c> and the latest <c>DateTime</c>s they were added to the <c>TPSet{T}</c>.
+    /// </summary>
     private readonly Dictionary<T, DateTime> addSet;
+
+    /// <summary>
+    /// Dictionary of values <c>T</c> and the latest <c>DateTime</c>s they were removed from the <c>TPSet{T}</c>.
+    /// </summary>
     private readonly Dictionary<T, DateTime> removeSet;
 
+    /// <summary>
+    /// Latest <c>DateTime</c> the value <c>null</c> was added to the <c>LWWSet{T}</c>.
+    /// </summary>
     private DateTime nullAddTime;
+
+    /// <summary>
+    /// Latest <c>DateTime</c> the value <c>null</c> was removed from the <c>LWWSet{T}</c>.
+    /// </summary>
     private DateTime nullRemoveTime;
+
+    /// <summary>
+    /// Is the value <c>null</c> added to the <c>LWWSet{T}</c>.
+    /// </summary>
     private bool isNullAdded;
+
+    /// <summary>
+    /// Is the value <c>null</c> removed from the <c>LWWSet{T}</c>.
+    /// </summary>
     private bool isNullRemoved;
 
+    /// <summary>
+    /// Count of elements in the <c>LWWSet{T}</c>.
+    /// </summary>
     public int Count => this.LookupAll().Count();
 
+    /// <summary>
+    /// Get a value indicating whether the <c>LWWSet{T}</c> is read-only.
+    /// </summary>
     public bool IsReadOnly => false;
 
     public LWWSet()
@@ -82,6 +140,10 @@ public class LWWSet<T> : CRDT, ICollection<T>
         this.removeSet = new Dictionary<T, DateTime>();
     }
 
+    /// <summary>
+    /// Add element <c>item</c> to the <c>LWWSet{T}</c> with the current <c>DateTime</c>.
+    /// </summary>
+    /// <param name="item">Element to add.</param>
     [OperationType(OpType.Update)]
     public virtual void Add(T item)
     {
@@ -98,6 +160,10 @@ public class LWWSet<T> : CRDT, ICollection<T>
         }
     }
 
+    /// <summary>
+    /// Remove element <c>item</c> from the <c>LWWSet{T}</c> with the current <c>DateTime</c>.
+    /// </summary>
+    /// <param name="item">Element to remove.</param>
     [OperationType(OpType.Update)]
     public virtual bool Remove(T item)
     {
@@ -124,6 +190,9 @@ public class LWWSet<T> : CRDT, ICollection<T>
         }
     }
 
+    /// <summary>
+    /// Removes all items from the <c>LWWSet{T}</c>.
+    /// </summary>
     [OperationType(OpType.Update)]
     public virtual void Clear()
     {
@@ -135,6 +204,10 @@ public class LWWSet<T> : CRDT, ICollection<T>
         this.isNullAdded = false;
     }
 
+    /// <summary>
+    /// Queries all elements in the <c>LWWSet{T}</c>.
+    /// </summary>
+    /// <returns><c>IEnumerable</c> of elements in the <c>LWWSet{T}</c>.</returns>
     private IEnumerable<T> LookupAll()
     {
         var onlyInAdd = this.addSet.Keys.Except(this.removeSet.Keys);
@@ -158,16 +231,27 @@ public class LWWSet<T> : CRDT, ICollection<T>
         return onlyInAdd.Union(addTimeGTRmTime).Union(nullVal);
     }
 
+    /// <summary>
+    /// Checks if <c>LWWset{T}</c> contains element.
+    /// </summary>
+    /// <param name="item">Element to check if contained in <c>LWWSet{T}</c>.</param>
+    /// <returns><c>true</c> if the element is in the <c>LWWset{T}</c>, <c>false</c> otherwise.</returns>
     public bool Contains(T item)
     {
         return this.LookupAll().Contains(item);
     }
 
+    /// <summary>
+    /// Copies all the elements of the current <c>LWWSet{T}</c> to the specified one-dimensional array.
+    /// </summary>
+    /// <param name="array">Target array to copy to.</param>
+    /// <param name="arrayIndex">Index of <c>array</c> at which to begin copying.</param>
     public void CopyTo(T[] array, int index)
     {
         this.LookupAll().ToArray().CopyTo(array, index);
     }
 
+    /// <inheritdoc />
     public override void ApplySynchronizedUpdate(PropagationMessage receivedUpdate)
     {
         if (receivedUpdate is not LWWSetMsg<T>)
@@ -215,6 +299,7 @@ public class LWWSet<T> : CRDT, ICollection<T>
         }
     }
 
+    /// <inheritdoc />
     public override PropagationMessage DecodePropagationMessage(byte[] input)
     {
         LWWSetMsg<T> msg = new();
@@ -222,6 +307,7 @@ public class LWWSet<T> : CRDT, ICollection<T>
         return msg;
     }
 
+    /// <inheritdoc />
     public override PropagationMessage GetLastSynchronizedUpdate()
     {
         return new LWWSetMsg<T>(this.addSet, this.removeSet,
@@ -230,11 +316,19 @@ public class LWWSet<T> : CRDT, ICollection<T>
         );
     }
 
+    /// <summary>
+    /// Returns an enumerator that iterates through the collection.
+    /// </summary>
+    /// <returns>An enumerator that can be used to iterate through the collection.</returns>
     public IEnumerator<T> GetEnumerator()
     {
         return this.LookupAll().GetEnumerator();
     }
 
+    /// <summary>
+    /// Returns an enumerator that iterates through a collection.
+    /// </summary>
+    /// <returns>An <c>IEnumerator</c> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return this.GetEnumerator();
