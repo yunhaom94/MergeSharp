@@ -13,13 +13,13 @@ namespace MergeSharp;
 public class PNCounterMsg : PropagationMessage
 {
     /// <summary>
-    /// The class member for the positive values of the <c>PNCounterMsg</c>.
+    /// <c>Dictionary</c> of replicas' positive count.
     /// </summary>
     [JsonInclude]
     public Dictionary<Guid, int> pVector;
 
     /// <summary>
-    /// The class member for the negative values of the <c>PNCounterMsg</c>.
+    /// <c>Dictionary</c> of replicas' negative count.
     /// </summary>
     [JsonInclude]
     public Dictionary<Guid, int> nVector;
@@ -31,8 +31,8 @@ public class PNCounterMsg : PropagationMessage
     /// <summary>
     /// Parametrized constructor for <c>PNCounterMsg</c>.
     /// </summary>
-    /// <param name="pVector"><c>Dictionary</c> of {Guid, int} pairs containing the positive values.</param>
-    /// <param name="nVector"><c>Dictionary</c> of {Guid, int} pairs containing the negative values.</param>
+    /// <param name="pVector"><c>Dictionary</c> of replicas' positive count.</param>
+    /// <param name="nVector"><c>Dictionary</c> of replicas' negative count.</param>
     public PNCounterMsg(Dictionary<Guid, int> pVector, Dictionary<Guid, int> nVector)
     {
         this.pVector = pVector;
@@ -55,23 +55,23 @@ public class PNCounterMsg : PropagationMessage
 }
 
 /// <summary>
-/// The <c>PNCounter</c> Class.
+/// Positive Negative Counter. Semantics allows incrementing and decrementing counter.
 /// </summary>
 [ReplicatedType("PNCounter")]
 public class PNCounter : CRDT
 {
     /// <summary>
-    /// Member for positive values of the <c>PNCounter</c>.
+    /// <c>Dictionary</c> of replicas' positive count.
     /// </summary>
     private Dictionary<Guid, int> _pVector;
 
     /// <summary>
-    /// Member for negative values of the <c>PNCounter</c>.
+    /// <c>Dictionary</c> of replicas' negative count.
     /// </summary>
     private Dictionary<Guid, int> _nVector;
 
     /// <summary>
-    /// The class member for the replica ID of the <c>PNCounter</c>.
+    /// Unique replica ID of the <c>PNCounter</c>.
     /// </summary>
     private Guid replicaIdx;
 
@@ -97,7 +97,7 @@ public class PNCounter : CRDT
     /// <summary>
     /// Method to increment the <c>PNCounter</c>.
     /// </summary>
-    /// <param name="i">Value to increment the <c>PNCounter</c> by.</param>
+    /// <param name="i">Integer value to increment the <c>PNCounter</c> by.</param>
     [OperationType(OpType.Update)]
     public virtual void Increment(int i)
     {
@@ -108,7 +108,7 @@ public class PNCounter : CRDT
     /// <summary>
     /// Method to decrement the <c>PNCounter</c>.
     /// </summary>
-    /// <param name="i">Value to decrement the <c>PNCounter</c> by.</param>
+    /// <param name="i">Integer value to decrement the <c>PNCounter</c> by.</param>
     [OperationType(OpType.Update)]
     public virtual void Decrement(int i)
     {
