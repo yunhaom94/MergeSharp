@@ -15,26 +15,26 @@ namespace MergeSharp;
 public class ORSetMsg<T> : PropagationMessage
 {
     /// <summary>
-    /// Represent's the <c>ORSetMsg{T}</c>'s add set.
+    /// Represents the <c>ORSet{T}</c>'s add set.
     /// </summary>
     [JsonInclude]
     public Dictionary<T, HashSet<Guid>> addSet { get; private set; }
 
     /// <summary>
-    /// Represent's the <c>ORSetMsg{T}</c>'s remove set.
+    /// Represents the <c>ORSet{T}</c>'s remove set.
     /// </summary>
     /// <value></value>
     [JsonInclude]
     public Dictionary<T, HashSet<Guid>> removeSet { get; private set; }
 
     /// <summary>
-    /// Represent's the <c>ORSetMsg{T}</c>'s added null values set.
+    /// Represents the <c>ORSet{T}</c>'s added null values set.
     /// </summary>
     [JsonInclude]
     public HashSet<Guid> nullAddGuid { get; private set; }
 
     /// <summary>
-    /// Represent's the <c>ORSetMsg{T}</c>'s removed null values set.
+    /// Represents the <c>ORSet{T}</c>'s removed null values set.
     /// </summary>
     [JsonInclude]
     public HashSet<Guid> nullRemoveGuid { get; private set; }
@@ -77,22 +77,22 @@ public class ORSetMsg<T> : PropagationMessage
 public class ORSet<T> : CRDT, ICollection<T>
 {
     /// <summary>
-    /// Dictionary(T, Hashset{Guid}) used to track how many times a value has been added to the set.
+    /// Dictionary{T, Hashset{Guid}} used to track how many times a value has been added to the set.
     /// </summary>
     private readonly Dictionary<T, HashSet<Guid>> addSet;
 
     /// <summary>
-    /// Dictionary(T, Hashset{Guid}) used to track how many times a value has been removed from the set.
+    /// Dictionary{T, Hashset{Guid}} used to track how many times a value has been removed from the set.
     /// </summary>
     private readonly Dictionary<T, HashSet<Guid>> removeSet;
 
     /// <summary>
-    /// Dictionary(T, Hashset{Guid}) used to track how many times a null value has been added to the set.
+    /// Dictionary{T, Hashset{Guid}} used to track how many times a null value has been added to the set.
     /// </summary>
     private readonly HashSet<Guid> nullAddGuid;
 
     /// <summary>
-    /// Dictionary(T, Hashset{Guid}) used to track how many times a null value has been removed from the set.
+    /// Dictionary{T, Hashset{Guid}} used to track how many times a null value has been removed from the set.
     /// </summary>
     private readonly HashSet<Guid> nullRemoveGuid;
 

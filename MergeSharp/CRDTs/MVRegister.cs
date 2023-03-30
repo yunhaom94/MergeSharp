@@ -6,20 +6,20 @@ using System.Text.Json.Serialization;
 
 namespace MergeSharp;
 /// <summary>
-/// Propagation Message for the <c>MVRegisterMsg{T}</c> class.
+/// Propagation Message for the <c>MVRegister{T}</c> class.
 /// </summary>
 /// <typeparam name="T">The type stored by the MV-Register.</typeparam>
 [TypeAntiEntropyProtocol(typeof(MVRegister<>))]
 public class MVRegisterMsg<T> : PropagationMessage
 {
     /// <summary>
-    /// Represent's the <c>MVRegister{T}</c>'s value(s).
+    /// Set of <c>MVRegister{T}</c>'s current value(s).
     /// </summary>
     [JsonInclude]
     public HashSet<T> register { get; private set; }
 
     /// <summary>
-    /// Represent's the <c>MVRegister{T}</c>'s vector clock.
+    /// Represents the <c>MVRegister{T}</c>'s vector clock.
     /// </summary>
     [JsonInclude]
     public Dictionary<Guid, int> vectorClock { get; private set; }
@@ -68,7 +68,7 @@ public class MVRegister<T> : CRDT, IEnumerable<T>
     private HashSet<T> _register;
 
     /// <summary>
-    /// Dictionary(Guid,int) which holds the vector clocks of other MV-Register's.
+    /// Dictionary{Guid,int} which holds the clocks of other MV-Register's.
     /// </summary>
     private readonly Dictionary<Guid, int> _vectorClock;
 
@@ -104,7 +104,7 @@ public class MVRegister<T> : CRDT, IEnumerable<T>
     /// <summary>
     /// Updates the value of the register to the given item value. 
     /// </summary>
-    /// <param name="item">the new value of the register.</param>
+    /// <param name="item">New value of the register.</param>
     [OperationType(OpType.Update)]
     public virtual void Write(T item)
     {
