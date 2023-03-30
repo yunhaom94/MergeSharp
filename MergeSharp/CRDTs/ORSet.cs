@@ -77,22 +77,22 @@ public class ORSetMsg<T> : PropagationMessage
 public class ORSet<T> : CRDT, ICollection<T>
 {
     /// <summary>
-    /// Represent's the <c>ORSet{T}</c>'s add set.
+    /// Dictionary(T, Hashset{Guid}) used to track how many times a value has been added to the set.
     /// </summary>
     private readonly Dictionary<T, HashSet<Guid>> addSet;
 
     /// <summary>
-    /// Represent's the <c>ORSet{T}</c>'s remove set.
+    /// Dictionary(T, Hashset{Guid}) used to track how many times a value has been removed from the set.
     /// </summary>
     private readonly Dictionary<T, HashSet<Guid>> removeSet;
 
     /// <summary>
-    /// Represent's the <c>ORSet{T}</c>'s added null values set.
+    /// Dictionary(T, Hashset{Guid}) used to track how many times a null value has been added to the set.
     /// </summary>
     private readonly HashSet<Guid> nullAddGuid;
 
     /// <summary>
-    /// Represent's the <c>ORSet{T}</c>'s removed null values set.
+    /// Dictionary(T, Hashset{Guid}) used to track how many times a null value has been removed from the set.
     /// </summary>
     private readonly HashSet<Guid> nullRemoveGuid;
 
@@ -310,7 +310,6 @@ public class ORSet<T> : CRDT, ICollection<T>
     /// Returns an enumerator that iterates through the collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-
     public IEnumerator<T> GetEnumerator()
     {
         return this.LookupAll().GetEnumerator();
