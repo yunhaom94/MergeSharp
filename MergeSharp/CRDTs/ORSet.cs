@@ -70,7 +70,8 @@ public class ORSetMsg<T> : PropagationMessage
 }
 
 /// <summary>
-/// Class <c>ORSet{T}</c> models an Observed-Remove Set.
+/// Class <c>ORSet{T}</c> models an Observed-Remove Set. 
+/// Semantics follow that concurrent addition and removal result in addition prioritized.
 /// </summary>
 /// <typeparam name="T"> The type stored by the OR-Set.</typeparam>
 [ReplicatedType("ORSet")]

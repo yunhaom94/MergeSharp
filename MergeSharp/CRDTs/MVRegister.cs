@@ -51,7 +51,7 @@ public class MVRegisterMsg<T> : PropagationMessage
 }
 
 /// <summary>
-/// Class <c>MVRegister{T}</c> models a Multi-Value Register.
+/// Class <c>MVRegister{T}</c> models a Multi-Value Register. Semantics follow that all elements written concurrently will be saved in the register.
 /// </summary>
 /// <typeparam name="T">The type stored by the MV-Register.</typeparam>
 [ReplicatedType("MVRegister")]
