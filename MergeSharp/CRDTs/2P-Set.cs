@@ -92,9 +92,6 @@ public class TPSet<T> : CRDT, ICollection<T>
         }
     }
 
-    /// <summary>
-    /// Default constructor for <c>TPSet{T}</c>. Initialized to the empty set.
-    /// </summary>
     public TPSet()
     {
         this.addSet = new HashSet<T>();
