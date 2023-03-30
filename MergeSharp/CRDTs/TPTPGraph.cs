@@ -13,13 +13,13 @@ namespace MergeSharp;
 public class TPTPGraphMsg : PropagationMessage
 {
     /// <summary>
-    /// The class member for the vertices of the <c>TPTPGraphMsg</c>.
+    /// <c>TPSetMsg</c> containing <c>Guid</c> of vertices.
     /// </summary>
     [JsonInclude]
     public TPSetMsg<Guid> _verticesMsg;
 
     /// <summary>
-    /// The class member for the edges of the <c>TPTPGraphMsg</c>.
+    /// <c>TPSetMsg</c> containing <c>{Guid, Guid}</c> of edges.
     /// </summary>
     [JsonInclude]
     public TPSetMsg<(Guid, Guid)> _edgesMsg;
@@ -61,12 +61,12 @@ public class TPTPGraphMsg : PropagationMessage
 public class TPTPGraph : CRDT
 {
     /// <summary>
-    /// Member for <c>TPTPGraph</c> vertices.
+    /// <c>TPSet</c> containing <c>Guid</c> of vertices.
     /// </summary>
     private readonly TPSet<Guid> _vertices;
 
     /// <summary>
-    /// Member for <c>TPTPGraph</c> edges.
+    /// <c>TPSet</c> containing <c>Guid</c> of edges.
     /// </summary>
     private readonly TPSet<(Guid, Guid)> _edges;
 
@@ -79,7 +79,7 @@ public class TPTPGraph : CRDT
     /// <summary>
     /// Method to add a vertex.
     /// </summary>
-    /// <param name="v">Vertex to be added.</param>
+    /// <param name="v"><c>Guid</c> of vertex to be added.</param>
     [OperationType(OpType.Update)]
     public virtual void AddVertex(Guid v)
     {
@@ -89,7 +89,7 @@ public class TPTPGraph : CRDT
     /// <summary>
     /// Method to remove a vertex.
     /// </summary>
-    /// <param name="v">Vertex to be removed.</param>
+    /// <param name="v"><c>Guid</c> of vertex to be removed.</param>
     /// <returns> <c>True</c> if successfully added.</returns>
     [OperationType(OpType.Update)]
     public virtual bool RemoveVertex(Guid v)
@@ -108,8 +108,8 @@ public class TPTPGraph : CRDT
     /// <summary>
     /// Method to add an edge.
     /// </summary>
-    /// <param name="v1">First vertex of the edge.</param>
-    /// <param name="v2">Second vertex of the edge.</param>
+    /// <param name="v1"><c>Guid</c> of source vertex of the edge.</param>
+    /// <param name="v2"><c>Guid</c> of destination vertex of the edge.</param>
     /// <returns> <c>True</c> if successfully added.</returns>
     [OperationType(OpType.Update)]
     public virtual bool AddEdge(Guid v1, Guid v2)
@@ -128,8 +128,8 @@ public class TPTPGraph : CRDT
     /// <summary>
     /// Method to remove an edge.
     /// </summary>
-    /// <param name="v1">First vertex of the edge.</param>
-    /// <param name="v2">Second vertex of the edge.</param>
+    /// <param name="v1"><c>Guid</c> of source vertex of the edge.</param>
+    /// <param name="v2"><c>Guid</c> of destination vertex of the edge.</param>
     /// <returns> <c>True</c> if successfully added.</returns>
     [OperationType(OpType.Update)]
     public virtual bool RemoveEdge(Guid v1, Guid v2)
@@ -170,7 +170,7 @@ public class TPTPGraph : CRDT
     /// <summary>
     /// Method that returns if a vertex is in the <c>TPTPGraph</c>.
     /// </summary>
-    /// <param name="v">Vertex to be checked.</param>
+    /// <param name="v"><c>Guid</c> of vertex to be checked.</param>
     /// <returns><c>True</c> if the vertex is in the <c>TPTPGraph</c>.</returns>
     public bool Contains(Guid v)
     {
@@ -180,8 +180,8 @@ public class TPTPGraph : CRDT
     /// <summary>
     /// Method that returns if an edge is in the <c>TPTPGraph</c>.
     /// </summary>
-    /// <param name="v1">First vertex of the edge.</param>
-    /// <param name="v2">Second vertex of the edge.</param>
+    /// <param name="v1"><c>Guid</c> of source vertex of the edge.</param>
+    /// <param name="v2"><c>Guid</c> of destination vertex of the edge.</param>
     /// <returns><c>True</c> if the edge is in the <c>TPTPGraph</c>.</returns>
     public bool Contains(Guid v1, Guid v2)
     {
