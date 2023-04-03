@@ -6,13 +6,21 @@ using System.Text.Json.Serialization;
 
 namespace MergeSharp;
 
+/// <summary>
+/// The <c>PropagationMessage</c> for <c>TPTPGraph</c> Class.
+/// </summary>
 [TypeAntiEntropyProtocol(typeof(TPTPGraph))]
-
 public class TPTPGraphMsg : PropagationMessage
 {
+    /// <summary>
+    /// <c>TPSetMsg</c> containing <c>Guid</c> of vertices.
+    /// </summary>
     [JsonInclude]
     public TPSetMsg<Guid> _verticesMsg;
 
+    /// <summary>
+    /// <c>TPSetMsg</c> containing <c>{Guid, Guid}</c> of edges.
+    /// </summary>
     [JsonInclude]
     public TPSetMsg<(Guid, Guid)> _edgesMsg;
 
@@ -26,6 +34,7 @@ public class TPTPGraphMsg : PropagationMessage
         this._edgesMsg = (TPSetMsg<(Guid, Guid)>) edges.GetLastSynchronizedUpdate();
     }
 
+    /// <inheritdoc/>
     public override void Decode(byte[] input)
     {
         var json = JsonSerializer.Deserialize<TPTPGraphMsg>(input);
@@ -33,16 +42,27 @@ public class TPTPGraphMsg : PropagationMessage
         this._edgesMsg = json._edgesMsg;
     }
 
+    /// <inheritdoc/>
     public override byte[] Encode()
     {
         return JsonSerializer.SerializeToUtf8Bytes(this);
     }
 }
 
+/// <summary>
+/// Two-Phase Two-Phase Graph. Semantics restrict readdition of vertices and edges after removal.
+/// </summary>
 [ReplicatedType("TPTPGraph")]
 public class TPTPGraph : CRDT
 {
+    /// <summary>
+    /// <c>TPSet</c> containing <c>Guid</c> of vertices.
+    /// </summary>
     private readonly TPSet<Guid> _vertices;
+
+    /// <summary>
+    /// <c>TPSet</c> containing <c>Guid</c> of edges.
+    /// </summary>
     private readonly TPSet<(Guid, Guid)> _edges;
 
     public TPTPGraph()
@@ -51,12 +71,21 @@ public class TPTPGraph : CRDT
         this._edges = new TPSet<(Guid, Guid)>();
     }
 
+    /// <summary>
+    /// Method to add a vertex.
+    /// </summary>
+    /// <param name="v"><c>Guid</c> of vertex to be added.</param>
     [OperationType(OpType.Update)]
     public virtual void AddVertex(Guid v)
     {
         this._vertices.Add(v);
     }
 
+    /// <summary>
+    /// Method to remove a vertex.
+    /// </summary>
+    /// <param name="v"><c>Guid</c> of vertex to be removed.</param>
+    /// <returns><c>true</c> if successfully added, otherwise <c>false</c>.</returns>
     [OperationType(OpType.Update)]
     public virtual bool RemoveVertex(Guid v)
     {
@@ -71,12 +100,19 @@ public class TPTPGraph : CRDT
         return false;
     }
 
+    /// <summary>
+    /// Method to add an edge.
+    /// </summary>
+    /// <param name="v1"><c>Guid</c> of source vertex of the edge.</param>
+    /// <param name="v2"><c>Guid</c> of destination vertex of the edge.</param>
+    /// <returns><c>true</c> if successfully added, otherwise <c>false</c>.</returns>
     [OperationType(OpType.Update)]
     public virtual bool AddEdge(Guid v1, Guid v2)
     {
         var vertices = this.LookupVertices();
 
-        if (!vertices.Contains(v1) || !vertices.Contains(v2)) {
+        if (!vertices.Contains(v1) || !vertices.Contains(v2))
+        {
             return false;
         }
 
@@ -84,13 +120,22 @@ public class TPTPGraph : CRDT
         return true;
     }
 
+    /// <summary>
+    /// Method to remove an edge.
+    /// </summary>
+    /// <param name="v1"><c>Guid</c> of source vertex of the edge.</param>
+    /// <param name="v2"><c>Guid</c> of destination vertex of the edge.</param>
+    /// <returns><c>true</c> if successfully added, otherwise <c>false</c>.</returns>
     [OperationType(OpType.Update)]
     public virtual bool RemoveEdge(Guid v1, Guid v2)
     {
         return this._edges.Remove((v1, v2));
     }
 
-
+    /// <summary>
+    /// Method that returns all edges in the <c>TPTPGraph</c>.
+    /// </summary>
+    /// <returns><c>IEnumerable{(Guid, Guid)}</c> of edges.</returns>
     public IEnumerable<(Guid, Guid)> LookupEdges()
     {
         List<(Guid, Guid)> edges = new();
@@ -108,24 +153,39 @@ public class TPTPGraph : CRDT
         return edges;
     }
 
+    /// <summary>
+    /// Method that returns all vertices in the <c>TPTPGraph</c>.
+    /// </summary>
+    /// <returns><c>IEnumerable{Guid}</c> of vertices.</returns>
     public IEnumerable<Guid> LookupVertices()
     {
         return this._vertices.LookupAll();
     }
 
+    /// <summary>
+    /// Method that returns if a vertex is in the <c>TPTPGraph</c>.
+    /// </summary>
+    /// <param name="v"><c>Guid</c> of vertex to be checked.</param>
+    /// <returns><c>true</c> if the vertex is in the <c>TPTPGraph</c>, otherwise <c>false</c>.</returns>
     public bool Contains(Guid v)
     {
         return this.LookupVertices().Contains(v);
     }
 
+    /// <summary>
+    /// Method that returns if an edge is in the <c>TPTPGraph</c>.
+    /// </summary>
+    /// <param name="v1"><c>Guid</c> of source vertex of the edge.</param>
+    /// <param name="v2"><c>Guid</c> of destination vertex of the edge.</param>
+    /// <returns><c>true</c> if the edge is in the <c>TPTPGraph</c>, otherwise <c>false</c>.</returns>
     public bool Contains(Guid v1, Guid v2)
     {
         return this.LookupEdges().Contains((v1, v2));
     }
 
-
-
-    public override void ApplySynchronizedUpdate(PropagationMessage receivedUpdate){
+    /// <inheritdoc/>
+    public override void ApplySynchronizedUpdate(PropagationMessage receivedUpdate)
+    {
         if (receivedUpdate is not TPTPGraphMsg)
         {
             throw new NotSupportedException($"ApplySynchronizedUpdate does not support receivedUpdate type of {receivedUpdate.GetType()}");
@@ -136,13 +196,17 @@ public class TPTPGraph : CRDT
         this._vertices.ApplySynchronizedUpdate(received._verticesMsg);
     }
 
-    public override PropagationMessage DecodePropagationMessage(byte[] input) {
+    /// <inheritdoc/>
+    public override PropagationMessage DecodePropagationMessage(byte[] input)
+    {
         TPTPGraphMsg msg = new();
         msg.Decode(input);
         return msg;
     }
 
-    public override PropagationMessage GetLastSynchronizedUpdate() {
+    /// <inheritdoc/>
+    public override PropagationMessage GetLastSynchronizedUpdate()
+    {
         return new TPTPGraphMsg(this._vertices, this._edges);
     }
 }
