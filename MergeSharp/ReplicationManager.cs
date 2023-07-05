@@ -109,6 +109,25 @@ namespace MergeSharp
             return result;
         }
 
+        
+        /// <summary>
+        /// Non generic version of GetCRDT. Returns a CRDT object and requires explicit casting.
+        /// </summary>
+        /// <param name="id">Instance Guid</param>
+        /// <returns></returns>
+        public bool TryGetCRDT(Guid id, out CRDT crdtInstance)
+        {
+            CRDT instance;
+            var result = this.objectLookupTable.TryGetValue(id, out instance);
+            if (result)
+                crdtInstance = instance;
+            else
+                crdtInstance = null;
+
+            return result;
+
+        }
+
         /// <summary>
         /// Retrieve a CRDT instance by given Guid. Throws KeyNotFoundException if instance not found.
         /// </summary>
